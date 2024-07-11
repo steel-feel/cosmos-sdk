@@ -1,0 +1,17 @@
+syntax = "proto3";
+package xarchain.xarchain;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "xarchain/xarchain/params.proto";
+
+option go_package = "xarchain/x/xarchain/types";
+
+// GenesisState defines the xarchain module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
