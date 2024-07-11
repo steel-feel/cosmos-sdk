@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Query_Params_FullMethodName   = "/xarchain.xarchain.Query/Params"
 	Query_ShowTask_FullMethodName = "/xarchain.xarchain.Query/ShowTask"
+	Query_ListTask_FullMethodName = "/xarchain.xarchain.Query/ListTask"
 )
 
 // QueryClient is the client API for Query service.
@@ -31,6 +32,8 @@ type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries a list of ShowTask items.
 	ShowTask(ctx context.Context, in *QueryShowTaskRequest, opts ...grpc.CallOption) (*QueryShowTaskResponse, error)
+	// Queries a list of ListTask items.
+	ListTask(ctx context.Context, in *QueryListTaskRequest, opts ...grpc.CallOption) (*QueryListTaskResponse, error)
 }
 
 type queryClient struct {
@@ -59,6 +62,15 @@ func (c *queryClient) ShowTask(ctx context.Context, in *QueryShowTaskRequest, op
 	return out, nil
 }
 
+func (c *queryClient) ListTask(ctx context.Context, in *QueryListTaskRequest, opts ...grpc.CallOption) (*QueryListTaskResponse, error) {
+	out := new(QueryListTaskResponse)
+	err := c.cc.Invoke(ctx, Query_ListTask_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -67,6 +79,8 @@ type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries a list of ShowTask items.
 	ShowTask(context.Context, *QueryShowTaskRequest) (*QueryShowTaskResponse, error)
+	// Queries a list of ListTask items.
+	ListTask(context.Context, *QueryListTaskRequest) (*QueryListTaskResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -79,6 +93,9 @@ func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*Q
 }
 func (UnimplementedQueryServer) ShowTask(context.Context, *QueryShowTaskRequest) (*QueryShowTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ShowTask not implemented")
+}
+func (UnimplementedQueryServer) ListTask(context.Context, *QueryListTaskRequest) (*QueryListTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTask not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -129,6 +146,24 @@ func _Query_ShowTask_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ListTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryListTaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ListTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ListTask_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ListTask(ctx, req.(*QueryListTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -143,6 +178,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ShowTask",
 			Handler:    _Query_ShowTask_Handler,
+		},
+		{
+			MethodName: "ListTask",
+			Handler:    _Query_ListTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

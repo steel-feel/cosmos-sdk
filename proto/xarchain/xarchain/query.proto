@@ -25,6 +25,12 @@ service Query {
     option (google.api.http).get = "/xarchain/xarchain/show_task/{id}";
   
   }
+  
+  // Queries a list of ListTask items.
+  rpc ListTask (QueryListTaskRequest) returns (QueryListTaskResponse) {
+    option (google.api.http).get = "/xarchain/xarchain/list_task";
+  
+  }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -42,5 +48,14 @@ message QueryShowTaskRequest {
 
 message QueryShowTaskResponse {
   Task task = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryListTaskRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryListTaskResponse {
+ repeated Task task = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
