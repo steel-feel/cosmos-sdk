@@ -17,6 +17,13 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Use:       "params",
 					Short:     "Shows the parameters of the module",
 				},
+				{
+					RpcMethod:      "ShowTask",
+					Use:            "show-task [id]",
+					Short:          "Query show-task",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+				},
+
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
@@ -27,6 +34,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				{
 					RpcMethod: "UpdateParams",
 					Skip:      true, // skipped because authority gated
+				},
+				{
+					RpcMethod:      "CreateTask",
+					Use:            "create-task [title]",
+					Short:          "Send a create-task tx",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "title"}},
+				},
+				{
+					RpcMethod:      "UpdateTask",
+					Use:            "update-task [title] [status] [id]",
+					Short:          "Send a update-task tx",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "title"}, {ProtoField: "status"}, {ProtoField: "id"}},
 				},
 				// this line is used by ignite scaffolding # autocli/tx
 			},

@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package xarchain.xarchain;
 
 import "amino/amino.proto";
@@ -6,25 +7,40 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "xarchain/xarchain/params.proto";
+import "xarchain/xarchain/task.proto";
 
 option go_package = "xarchain/x/xarchain/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  
   // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/xarchain/xarchain/params";
+  
+  }
+  
+  // Queries a list of ShowTask items.
+  rpc ShowTask (QueryShowTaskRequest) returns (QueryShowTaskResponse) {
+    option (google.api.http).get = "/xarchain/xarchain/show_task/{id}";
+  
   }
 }
-
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
+  
   // params holds all the parameters of this module.
-  Params params = 1 [
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
+  Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
+
+message QueryShowTaskRequest {
+  uint64 id = 1;
+}
+
+message QueryShowTaskResponse {
+  Task task = 1 [(gogoproto.nullable) = false];
+}
+

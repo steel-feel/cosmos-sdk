@@ -23,7 +23,15 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgCreateTask = "op_weight_msg_create_task"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateTask int = 100
+
+	opWeightMsgUpdateTask = "op_weight_msg_update_task"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateTask int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -46,6 +54,28 @@ func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
+	var weightMsgCreateTask int
+	simState.AppParams.GetOrGenerate(opWeightMsgCreateTask, &weightMsgCreateTask, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateTask = defaultWeightMsgCreateTask
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateTask,
+		xarchainsimulation.SimulateMsgCreateTask(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateTask int
+	simState.AppParams.GetOrGenerate(opWeightMsgUpdateTask, &weightMsgUpdateTask, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateTask = defaultWeightMsgUpdateTask
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateTask,
+		xarchainsimulation.SimulateMsgUpdateTask(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -54,6 +84,22 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return []simtypes.WeightedProposalMsg{
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgCreateTask,
+			defaultWeightMsgCreateTask,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgCreateTask(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgUpdateTask,
+			defaultWeightMsgUpdateTask,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgUpdateTask(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
 		// this line is used by starport scaffolding # simapp/module/OpMsg
 	}
 }
