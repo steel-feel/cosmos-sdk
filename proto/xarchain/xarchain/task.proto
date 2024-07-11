@@ -1,0 +1,13 @@
+syntax = "proto3";
+package xarchain.xarchain;
+
+option go_package = "xarchain/x/xarchain/types";
+
+message Task {
+  
+  string title = 1; 
+  string status = 2; 
+  string abci = 3; 
+  string creator = 4; 
+  uint64 id = 5; 
+}
