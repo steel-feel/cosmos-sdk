@@ -76,9 +76,11 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
 	xarchainmodulekeeper "xarchain/x/xarchain/keeper"
+	xarchain_abci "xarchain/x/xarchain/abci"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	"xarchain/docs"
+	// "time"
 )
 
 const (
@@ -284,6 +286,27 @@ func New(
 	); err != nil {
 		panic(err)
 	}
+
+	voteExtHandler := xarchain_abci.NewCAExtHandler(
+		logger,
+		app.XarchainKeeper,
+	)
+
+	propHandler := xarchain_abci.NewProposalHandler(
+		logger,
+		app.XarchainKeeper,
+		app.StakingKeeper,
+	)
+
+	baseAppOptions = append(baseAppOptions, func(ba *baseapp.BaseApp) {
+		ba.SetExtendVoteHandler(voteExtHandler.ExtendVoteHandler())
+		ba.SetVerifyVoteExtensionHandler(voteExtHandler.VerifyVoteExtensionHandler())
+		ba.SetPrepareProposal(propHandler.PrepareProposal())
+		ba.SetProcessProposal(propHandler.ProcessProposal())
+		ba.SetPreBlocker(propHandler.PreBlocker)
+	})
+
+
 
 	// Below we could construct and set an application specific mempool and
 	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are

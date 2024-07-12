@@ -3,7 +3,7 @@ package abci
 import (
 	"encoding/json"
 	"fmt"
-	"time"
+	
 
 	"cosmossdk.io/log"
 
@@ -15,9 +15,7 @@ import (
 )
 
 type VoteExtHandler struct {
-	logger          log.Logger
-	currentBlock    int64                            // current block height
-	lastPriceSyncTS time.Time                        // last time we synced prices
+	logger          log.Logger                      // current block height
 	Keeper keeper.Keeper
 }
 
@@ -30,6 +28,17 @@ type CAVoteExtension struct {
 	Blocknumber uint64
 	IDs []uint64
 }
+
+func NewCAExtHandler(
+	logger          log.Logger,          // current block height             // last time we synced prices
+	keeper keeper.Keeper,
+) *VoteExtHandler {
+	return &VoteExtHandler{
+		logger:          logger,
+		Keeper:          keeper,
+	}
+}
+
 
 func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
     return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
@@ -89,21 +98,21 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 		for id := range voteExt.IDs {
 			task,found := h.Keeper.GetTask(ctx, uint64(id))
 			if !found {
-				return nil, fmt.Errorf("failed to find task id: %w", id)
+				return nil, fmt.Errorf("failed to find task id: %v", id)
 
 			}
 			if task.Status != "picked"  {
-				return nil, fmt.Errorf("task is not picked yet: %w", id)
+				return nil, fmt.Errorf("task is not picked yet: %v", id)
 
 			}
 
 			currBlock, err := FetchTxn(task.Title)
 			if err != nil {
-				return nil, fmt.Errorf("txn hash not found: %w", id)
+				return nil, fmt.Errorf("txn hash not found: %v", id)
 			}
 
 			if currBlock < 2 {
-				return nil, fmt.Errorf("txn not mined yet: %w", id)
+				return nil, fmt.Errorf("txn not mined yet: %v", id)
 			}
 
 		}
