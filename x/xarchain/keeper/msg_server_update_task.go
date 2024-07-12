@@ -16,6 +16,7 @@ func (k msgServer) UpdateTask(goCtx context.Context, msg *types.MsgUpdateTask) (
 	var task = types.Task{
 		Creator: msg.Creator,
 		Id:      msg.Id,
+		Title:  msg.Title,
 		Status:  "picked",
 	}
 	val, found := k.GetTask(ctx, msg.Id)
@@ -26,7 +27,6 @@ func (k msgServer) UpdateTask(goCtx context.Context, msg *types.MsgUpdateTask) (
 		return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	task.Title = val.Title
 	k.SetTask(ctx, task)
 	return &types.MsgUpdateTaskResponse{}, nil
 }
