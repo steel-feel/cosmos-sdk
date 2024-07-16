@@ -22,6 +22,7 @@ const (
 	Query_Params_FullMethodName   = "/xarchain.xarchain.Query/Params"
 	Query_ShowTask_FullMethodName = "/xarchain.xarchain.Query/ShowTask"
 	Query_ListTask_FullMethodName = "/xarchain.xarchain.Query/ListTask"
+	Query_Cblock_FullMethodName   = "/xarchain.xarchain.Query/Cblock"
 )
 
 // QueryClient is the client API for Query service.
@@ -34,6 +35,8 @@ type QueryClient interface {
 	ShowTask(ctx context.Context, in *QueryShowTaskRequest, opts ...grpc.CallOption) (*QueryShowTaskResponse, error)
 	// Queries a list of ListTask items.
 	ListTask(ctx context.Context, in *QueryListTaskRequest, opts ...grpc.CallOption) (*QueryListTaskResponse, error)
+	// Queries a Cblock by index.
+	Cblock(ctx context.Context, in *QueryGetCblockRequest, opts ...grpc.CallOption) (*QueryGetCblockResponse, error)
 }
 
 type queryClient struct {
@@ -71,6 +74,15 @@ func (c *queryClient) ListTask(ctx context.Context, in *QueryListTaskRequest, op
 	return out, nil
 }
 
+func (c *queryClient) Cblock(ctx context.Context, in *QueryGetCblockRequest, opts ...grpc.CallOption) (*QueryGetCblockResponse, error) {
+	out := new(QueryGetCblockResponse)
+	err := c.cc.Invoke(ctx, Query_Cblock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -81,6 +93,8 @@ type QueryServer interface {
 	ShowTask(context.Context, *QueryShowTaskRequest) (*QueryShowTaskResponse, error)
 	// Queries a list of ListTask items.
 	ListTask(context.Context, *QueryListTaskRequest) (*QueryListTaskResponse, error)
+	// Queries a Cblock by index.
+	Cblock(context.Context, *QueryGetCblockRequest) (*QueryGetCblockResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -96,6 +110,9 @@ func (UnimplementedQueryServer) ShowTask(context.Context, *QueryShowTaskRequest)
 }
 func (UnimplementedQueryServer) ListTask(context.Context, *QueryListTaskRequest) (*QueryListTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTask not implemented")
+}
+func (UnimplementedQueryServer) Cblock(context.Context, *QueryGetCblockRequest) (*QueryGetCblockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Cblock not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -164,6 +181,24 @@ func _Query_ListTask_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Cblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetCblockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Cblock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Cblock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Cblock(ctx, req.(*QueryGetCblockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -182,6 +217,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListTask",
 			Handler:    _Query_ListTask_Handler,
+		},
+		{
+			MethodName: "Cblock",
+			Handler:    _Query_Cblock_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

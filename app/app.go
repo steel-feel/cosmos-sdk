@@ -75,8 +75,9 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
-	xarchainmodulekeeper "xarchain/x/xarchain/keeper"
 	xarchain_abci "xarchain/x/xarchain/abci"
+	xarchainmodulekeeper "xarchain/x/xarchain/keeper"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	"xarchain/docs"
@@ -305,8 +306,6 @@ func New(
 		ba.SetProcessProposal(propHandler.ProcessProposal())
 		ba.SetPreBlocker(propHandler.PreBlocker)
 	})
-
-
 
 	// Below we could construct and set an application specific mempool and
 	// ABCI 1.0 PrepareProposal and ProcessProposal handlers. These defaults are

@@ -1,39 +1,39 @@
 package keeper
 
 import (
-    "context"
+	"context"
 
-    "cosmossdk.io/store/prefix"
-    "github.com/cosmos/cosmos-sdk/runtime"
-    "github.com/cosmos/cosmos-sdk/types/query"
-    "google.golang.org/grpc/codes"
-    "google.golang.org/grpc/status"
+	"cosmossdk.io/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"github.com/cosmos/cosmos-sdk/types/query"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
-    "xarchain/x/xarchain/types"
+	"xarchain/x/xarchain/types"
 )
 
 func (k Keeper) ListTask(ctx context.Context, req *types.QueryListTaskRequest) (*types.QueryListTaskResponse, error) {
-    if req == nil {
-        return nil, status.Error(codes.InvalidArgument, "invalid request")
-    }
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
 
-    storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-    store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.TaskKey))
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.TaskKey))
 
-    var tasks []types.Task
-    pageRes, err := query.Paginate(store, req.Pagination, func(key []byte, value []byte) error {
-        var task types.Task
-        if err := k.cdc.Unmarshal(value, &task); err != nil {
-            return err
-        }
+	var tasks []types.Task
+	pageRes, err := query.Paginate(store, req.Pagination, func(key []byte, value []byte) error {
+		var task types.Task
+		if err := k.cdc.Unmarshal(value, &task); err != nil {
+			return err
+		}
 
-        tasks = append(tasks, task)
-        return nil
-    })
+		tasks = append(tasks, task)
+		return nil
+	})
 
-    if err != nil {
-        return nil, status.Error(codes.Internal, err.Error())
-    }
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
-    return &types.QueryListTaskResponse{Task: tasks, Pagination: pageRes}, nil
+	return &types.QueryListTaskResponse{Task: tasks, Pagination: pageRes}, nil
 }

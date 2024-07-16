@@ -7,7 +7,12 @@ const DefaultIndex uint64 = 1
 
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
+	var number uint64 = 64201762
+  
 	return &GenesisState{
+		Cblock: &Cblock{
+			Blocknumber: number,
+		} ,
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}

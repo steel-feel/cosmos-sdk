@@ -38,7 +38,7 @@ func FetchTxn(txHashStr string) (uint64, error) {
 		fmt.Println("Transaction has not been mined yet")
 	}
 
-	currNumber , err := client.BlockNumber(ctx)
+	currNumber, err := client.BlockNumber(ctx)
 	if err != nil {
 		if err == ethereum.NotFound {
 			return 1, nil

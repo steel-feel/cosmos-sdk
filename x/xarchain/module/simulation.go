@@ -31,6 +31,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateTask int = 100
 
+	opWeightMsgCreateCblock = "op_weight_msg_cblock"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateCblock int = 100
+
+	opWeightMsgUpdateCblock = "op_weight_msg_cblock"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateCblock int = 100
+
+	opWeightMsgDeleteCblock = "op_weight_msg_cblock"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteCblock int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -76,6 +88,39 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		xarchainsimulation.SimulateMsgUpdateTask(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
+	var weightMsgCreateCblock int
+	simState.AppParams.GetOrGenerate(opWeightMsgCreateCblock, &weightMsgCreateCblock, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateCblock = defaultWeightMsgCreateCblock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateCblock,
+		xarchainsimulation.SimulateMsgCreateCblock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateCblock int
+	simState.AppParams.GetOrGenerate(opWeightMsgUpdateCblock, &weightMsgUpdateCblock, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateCblock = defaultWeightMsgUpdateCblock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateCblock,
+		xarchainsimulation.SimulateMsgUpdateCblock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteCblock int
+	simState.AppParams.GetOrGenerate(opWeightMsgDeleteCblock, &weightMsgDeleteCblock, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteCblock = defaultWeightMsgDeleteCblock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteCblock,
+		xarchainsimulation.SimulateMsgDeleteCblock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -97,6 +142,30 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 			defaultWeightMsgUpdateTask,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
 				xarchainsimulation.SimulateMsgUpdateTask(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgCreateCblock,
+			defaultWeightMsgCreateCblock,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgCreateCblock(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgUpdateCblock,
+			defaultWeightMsgUpdateCblock,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgUpdateCblock(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgDeleteCblock,
+			defaultWeightMsgDeleteCblock,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgDeleteCblock(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),

@@ -16,7 +16,7 @@ func (k msgServer) UpdateTask(goCtx context.Context, msg *types.MsgUpdateTask) (
 	var task = types.Task{
 		Creator: msg.Creator,
 		Id:      msg.Id,
-		Title:  msg.Title,
+		Title:   msg.Title,
 		Status:  "picked",
 	}
 	val, found := k.GetTask(ctx, msg.Id)

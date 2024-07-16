@@ -31,6 +31,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{},
 				},
 
+				{
+					RpcMethod: "Cblock",
+					Use:       "show-cblock",
+					Short:     "show cblock",
+				},
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
@@ -53,6 +58,23 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Use:            "update-task [title] [status] [id]",
 					Short:          "Send a update-task tx",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "title"}, {ProtoField: "status"}, {ProtoField: "id"}},
+				},
+				{
+					RpcMethod:      "CreateCblock",
+					Use:            "create-cblock [blocknumber]",
+					Short:          "Create cblock",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "blocknumber"}},
+				},
+				{
+					RpcMethod:      "UpdateCblock",
+					Use:            "update-cblock [blocknumber]",
+					Short:          "Update cblock",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "blocknumber"}},
+				},
+				{
+					RpcMethod: "DeleteCblock",
+					Use:       "delete-cblock",
+					Short:     "Delete cblock",
 				},
 				// this line is used by ignite scaffolding # autocli/tx
 			},

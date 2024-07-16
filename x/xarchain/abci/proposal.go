@@ -98,7 +98,7 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 			if err := json.Unmarshal(req.Txs[0], &injectedVoteExtTx); err != nil {
 				h.logger.Error("failed to decode proccess Proposal", "err", err)
 				// return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-				return	&abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
+				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
 			}
 
 			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)

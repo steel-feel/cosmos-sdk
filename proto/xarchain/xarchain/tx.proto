@@ -7,6 +7,7 @@ import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "xarchain/xarchain/params.proto";
+import "xarchain/xarchain/cblock.proto";
 
 option go_package = "xarchain/x/xarchain/types";
 
@@ -19,6 +20,9 @@ service Msg {
   rpc UpdateParams (MsgUpdateParams) returns (MsgUpdateParamsResponse);
   rpc CreateTask   (MsgCreateTask  ) returns (MsgCreateTaskResponse  );
   rpc UpdateTask   (MsgUpdateTask  ) returns (MsgUpdateTaskResponse  );
+  rpc CreateCblock (MsgCreateCblock) returns (MsgCreateCblockResponse);
+  rpc UpdateCblock (MsgUpdateCblock) returns (MsgUpdateCblockResponse);
+  rpc DeleteCblock (MsgDeleteCblock) returns (MsgDeleteCblockResponse);
 }
 // MsgUpdateParams is the Msg/UpdateParams request type.
 message MsgUpdateParams {
@@ -57,4 +61,27 @@ message MsgUpdateTask {
 }
 
 message MsgUpdateTaskResponse {}
+
+message MsgCreateCblock {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator     = 1;
+  uint64 blocknumber = 3;
+}
+
+message MsgCreateCblockResponse {}
+
+message MsgUpdateCblock {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator     = 1;
+  uint64 blocknumber = 3;
+}
+
+message MsgUpdateCblockResponse {}
+
+message MsgDeleteCblock {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1;
+}
+
+message MsgDeleteCblockResponse {}
 
