@@ -8,35 +8,33 @@ import (
 
 var _ sdk.Msg = &MsgCreateCblock{}
 
-func NewMsgCreateCblock(creator string, blocknumber uint64) *MsgCreateCblock {
+func NewMsgCreateCblock(creator string, blocknumber int64) *MsgCreateCblock {
 	return &MsgCreateCblock{
-		Creator:     creator,
 		Blocknumber: blocknumber,
 	}
 }
 
 func (msg *MsgCreateCblock) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
-	}
+	// _, err := sdk.AccAddressFromBech32(msg.Creator)
+	// if err != nil {
+	// 	return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	// }
 	return nil
 }
 
 var _ sdk.Msg = &MsgUpdateCblock{}
 
-func NewMsgUpdateCblock(creator string, blocknumber uint64) *MsgUpdateCblock {
+func NewMsgUpdateCblock(creator string, blocknumber int64) *MsgUpdateCblock {
 	return &MsgUpdateCblock{
-		Creator:     creator,
 		Blocknumber: blocknumber,
 	}
 }
 
 func (msg *MsgUpdateCblock) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
-	}
+	// _, err := sdk.AccAddressFromBech32(msg.Creator)
+	// if err != nil {
+	// 	return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	// }
 	return nil
 }
 

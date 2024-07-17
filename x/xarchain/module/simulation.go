@@ -43,6 +43,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteCblock int = 100
 
+	opWeightMsgCreateIntent = "op_weight_msg_create_intent"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateIntent int = 100
+
+	opWeightMsgUpdateIntent = "op_weight_msg_update_intent"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateIntent int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -121,6 +129,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		xarchainsimulation.SimulateMsgDeleteCblock(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
+	var weightMsgCreateIntent int
+	simState.AppParams.GetOrGenerate(opWeightMsgCreateIntent, &weightMsgCreateIntent, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateIntent = defaultWeightMsgCreateIntent
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateIntent,
+		xarchainsimulation.SimulateMsgCreateIntent(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateIntent int
+	simState.AppParams.GetOrGenerate(opWeightMsgUpdateIntent, &weightMsgUpdateIntent, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateIntent = defaultWeightMsgUpdateIntent
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateIntent,
+		xarchainsimulation.SimulateMsgUpdateIntent(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -166,6 +196,22 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 			defaultWeightMsgDeleteCblock,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
 				xarchainsimulation.SimulateMsgDeleteCblock(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgCreateIntent,
+			defaultWeightMsgCreateIntent,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgCreateIntent(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgUpdateIntent,
+			defaultWeightMsgUpdateIntent,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				xarchainsimulation.SimulateMsgUpdateIntent(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),

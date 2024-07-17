@@ -4,5 +4,6 @@ package xarchain.xarchain;
 option go_package = "xarchain/x/xarchain/types";
 
 message Cblock {
-  uint64 blocknumber = 1; 
+  int64 blocknumber = 1; 
+  string creator = 2; 
   }

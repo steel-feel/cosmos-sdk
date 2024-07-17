@@ -15,12 +15,14 @@ import (
 var (
 	md_Cblock             protoreflect.MessageDescriptor
 	fd_Cblock_blocknumber protoreflect.FieldDescriptor
+	fd_Cblock_creator     protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_xarchain_xarchain_cblock_proto_init()
 	md_Cblock = File_xarchain_xarchain_cblock_proto.Messages().ByName("Cblock")
 	fd_Cblock_blocknumber = md_Cblock.Fields().ByName("blocknumber")
+	fd_Cblock_creator = md_Cblock.Fields().ByName("creator")
 }
 
 var _ protoreflect.Message = (*fastReflection_Cblock)(nil)
@@ -88,9 +90,15 @@ func (x *fastReflection_Cblock) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_Cblock) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Blocknumber != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Blocknumber)
+	if x.Blocknumber != int64(0) {
+		value := protoreflect.ValueOfInt64(x.Blocknumber)
 		if !f(fd_Cblock_blocknumber, value) {
+			return
+		}
+	}
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_Cblock_creator, value) {
 			return
 		}
 	}
@@ -110,7 +118,9 @@ func (x *fastReflection_Cblock) Range(f func(protoreflect.FieldDescriptor, proto
 func (x *fastReflection_Cblock) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "xarchain.xarchain.Cblock.blocknumber":
-		return x.Blocknumber != uint64(0)
+		return x.Blocknumber != int64(0)
+	case "xarchain.xarchain.Cblock.creator":
+		return x.Creator != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Cblock"))
@@ -128,7 +138,9 @@ func (x *fastReflection_Cblock) Has(fd protoreflect.FieldDescriptor) bool {
 func (x *fastReflection_Cblock) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "xarchain.xarchain.Cblock.blocknumber":
-		x.Blocknumber = uint64(0)
+		x.Blocknumber = int64(0)
+	case "xarchain.xarchain.Cblock.creator":
+		x.Creator = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Cblock"))
@@ -147,7 +159,10 @@ func (x *fastReflection_Cblock) Get(descriptor protoreflect.FieldDescriptor) pro
 	switch descriptor.FullName() {
 	case "xarchain.xarchain.Cblock.blocknumber":
 		value := x.Blocknumber
-		return protoreflect.ValueOfUint64(value)
+		return protoreflect.ValueOfInt64(value)
+	case "xarchain.xarchain.Cblock.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Cblock"))
@@ -169,7 +184,9 @@ func (x *fastReflection_Cblock) Get(descriptor protoreflect.FieldDescriptor) pro
 func (x *fastReflection_Cblock) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "xarchain.xarchain.Cblock.blocknumber":
-		x.Blocknumber = value.Uint()
+		x.Blocknumber = value.Int()
+	case "xarchain.xarchain.Cblock.creator":
+		x.Creator = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Cblock"))
@@ -192,6 +209,8 @@ func (x *fastReflection_Cblock) Mutable(fd protoreflect.FieldDescriptor) protore
 	switch fd.FullName() {
 	case "xarchain.xarchain.Cblock.blocknumber":
 		panic(fmt.Errorf("field blocknumber of message xarchain.xarchain.Cblock is not mutable"))
+	case "xarchain.xarchain.Cblock.creator":
+		panic(fmt.Errorf("field creator of message xarchain.xarchain.Cblock is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Cblock"))
@@ -206,7 +225,9 @@ func (x *fastReflection_Cblock) Mutable(fd protoreflect.FieldDescriptor) protore
 func (x *fastReflection_Cblock) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "xarchain.xarchain.Cblock.blocknumber":
-		return protoreflect.ValueOfUint64(uint64(0))
+		return protoreflect.ValueOfInt64(int64(0))
+	case "xarchain.xarchain.Cblock.creator":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Cblock"))
@@ -279,6 +300,10 @@ func (x *fastReflection_Cblock) ProtoMethods() *protoiface.Methods {
 		if x.Blocknumber != 0 {
 			n += 1 + runtime.Sov(uint64(x.Blocknumber))
 		}
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -307,6 +332,13 @@ func (x *fastReflection_Cblock) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
+			i--
+			dAtA[i] = 0x12
 		}
 		if x.Blocknumber != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Blocknumber))
@@ -376,11 +408,43 @@ func (x *fastReflection_Cblock) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Blocknumber |= uint64(b&0x7F) << shift
+					x.Blocknumber |= int64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -434,7 +498,8 @@ type Cblock struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Blocknumber uint64 `protobuf:"varint,1,opt,name=blocknumber,proto3" json:"blocknumber,omitempty"`
+	Blocknumber int64  `protobuf:"varint,1,opt,name=blocknumber,proto3" json:"blocknumber,omitempty"`
+	Creator     string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (x *Cblock) Reset() {
@@ -457,11 +522,18 @@ func (*Cblock) Descriptor() ([]byte, []int) {
 	return file_xarchain_xarchain_cblock_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Cblock) GetBlocknumber() uint64 {
+func (x *Cblock) GetBlocknumber() int64 {
 	if x != nil {
 		return x.Blocknumber
 	}
 	return 0
+}
+
+func (x *Cblock) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
 }
 
 var File_xarchain_xarchain_cblock_proto protoreflect.FileDescriptor
@@ -470,21 +542,23 @@ var file_xarchain_xarchain_cblock_proto_rawDesc = []byte{
 	0x0a, 0x1e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68,
 	0x61, 0x69, 0x6e, 0x2f, 0x63, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x12, 0x11, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68,
-	0x61, 0x69, 0x6e, 0x22, 0x2a, 0x0a, 0x06, 0x43, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x20, 0x0a,
+	0x61, 0x69, 0x6e, 0x22, 0x44, 0x0a, 0x06, 0x43, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x20, 0x0a,
 	0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x42,
-	0xad, 0x01, 0x0a, 0x15, 0x63, 0x6f, 0x6d, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e,
-	0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x42, 0x0b, 0x43, 0x62, 0x6c, 0x6f, 0x63,
-	0x6b, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x22, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68,
-	0x61, 0x69, 0x6e, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xa2, 0x02, 0x03, 0x58,
-	0x58, 0x58, 0xaa, 0x02, 0x11, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x58, 0x61,
-	0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xca, 0x02, 0x11, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69,
-	0x6e, 0x5c, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xe2, 0x02, 0x1d, 0x58, 0x61, 0x72,
-	0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x58, 0x61, 0x72,
-	0x63, 0x68, 0x61, 0x69, 0x6e, 0x3a, 0x3a, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x03, 0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12,
+	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x42, 0xad, 0x01, 0x0a, 0x15, 0x63, 0x6f,
+	0x6d, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68,
+	0x61, 0x69, 0x6e, 0x42, 0x0b, 0x43, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x50, 0x01, 0x5a, 0x22, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2f, 0x78, 0x61,
+	0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xa2, 0x02, 0x03, 0x58, 0x58, 0x58, 0xaa, 0x02, 0x11, 0x58,
+	0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e,
+	0xca, 0x02, 0x11, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x58, 0x61, 0x72, 0x63,
+	0x68, 0x61, 0x69, 0x6e, 0xe2, 0x02, 0x1d, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c,
+	0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x3a,
+	0x3a, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (

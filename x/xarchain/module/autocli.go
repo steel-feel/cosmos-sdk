@@ -36,6 +36,13 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Use:       "show-cblock",
 					Short:     "show cblock",
 				},
+				{
+					RpcMethod:      "GetIntent",
+					Use:            "get-intent [id]",
+					Short:          "Query get-intent",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+				},
+
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
@@ -75,6 +82,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "DeleteCblock",
 					Use:       "delete-cblock",
 					Short:     "Delete cblock",
+				},
+				{
+					RpcMethod:      "CreateIntent",
+					Use:            "create-intent [from] [to] [data] [value] [chain-id]",
+					Short:          "Send a create-intent tx",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "from"}, {ProtoField: "to"}, {ProtoField: "data"}, {ProtoField: "value"}, {ProtoField: "chainId"}},
+				},
+				{
+					RpcMethod:      "UpdateIntent",
+					Use:            "update-intent [status] [id]",
+					Short:          "Send a update-intent tx",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "status"}, {ProtoField: "id"}},
 				},
 				// this line is used by ignite scaffolding # autocli/tx
 			},

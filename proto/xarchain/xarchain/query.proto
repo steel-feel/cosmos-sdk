@@ -9,6 +9,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "xarchain/xarchain/params.proto";
 import "xarchain/xarchain/task.proto";
 import "xarchain/xarchain/cblock.proto";
+import "xarchain/xarchain/intent.proto";
 
 option go_package = "xarchain/x/xarchain/types";
 
@@ -36,6 +37,12 @@ service Query {
   // Queries a Cblock by index.
   rpc Cblock (QueryGetCblockRequest) returns (QueryGetCblockResponse) {
     option (google.api.http).get = "/xarchain/xarchain/cblock";
+  
+  }
+  
+  // Queries a list of GetIntent items.
+  rpc GetIntent (QueryGetIntentRequest) returns (QueryGetIntentResponse) {
+    option (google.api.http).get = "/xarchain/xarchain/get_intent/{id}";
   
   }
 }
@@ -70,5 +77,13 @@ message QueryGetCblockRequest {}
 
 message QueryGetCblockResponse {
   Cblock Cblock = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetIntentRequest {
+  uint64 id = 1;
+}
+
+message QueryGetIntentResponse {
+  Intent intent = 1;
 }
 

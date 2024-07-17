@@ -25,8 +25,9 @@ this is the object that will be marshaled as bytes and signed by the validator.
 */
 type CAVoteExtension struct {
 	Height      uint64
-	Blocknumber uint64
+	Blocknumber int64
 	IDs         []uint64
+	TxHashs     []string
 }
 
 func NewCAExtHandler(
@@ -41,35 +42,28 @@ func NewCAExtHandler(
 
 func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
-		count := h.Keeper.GetTaskCount(ctx)
+		lastBlock, found := h.Keeper.GetCblock(ctx)
+		if !found {
+			return nil, fmt.Errorf("failed to get last block")
+		}
+
+		eventResp, err := FetchEvents(lastBlock.Blocknumber)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch events: %w", err)
+		}
+
 		var IDs []uint64
-		var lastBlockNumeber uint64
-
-		for i := 0; i < int(count); i++ {
-			task, found := h.Keeper.GetTask(ctx, uint64(i))
-			if !found {
-				continue
-			}
-			if task.Status != "picked" {
-				continue
-			}
-
-			currBlock, err := FetchTxn(task.Title)
-			if err != nil {
-				continue
-			}
-
-			if currBlock < 2 {
-				continue
-			}
-			lastBlockNumeber = currBlock
-			IDs = append(IDs, task.Id)
+		var TxHashs []string
+		for _, intent := range eventResp.Intents {
+			IDs = append(IDs, uint64(intent.ID))
+			TxHashs = append(TxHashs, intent.TxHash)
 		}
 
 		voteExt := CAVoteExtension{
 			IDs:         IDs,
-			Blocknumber: lastBlockNumeber,
+			Blocknumber: eventResp.lastBlock,
 			Height:      uint64(req.Height),
+			TxHashs:     TxHashs,
 		}
 
 		bz, err := json.Marshal(voteExt)
@@ -93,26 +87,35 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			return nil, fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
 		}
 
-		for id := range voteExt.IDs {
-			task, found := h.Keeper.GetTask(ctx, uint64(id))
+		if len(voteExt.IDs) != len(voteExt.TxHashs) {
+			return nil, fmt.Errorf("vote extension IDs and TxHashs length mismatch")
+		}
+
+		//code for loop to len(voteExt.IDs)
+
+		for i := 0; i < len(voteExt.IDs); i++ {
+			task, found := h.Keeper.GetTask(ctx, uint64(voteExt.IDs[i]))
 			if !found {
-				return nil, fmt.Errorf("failed to find task id: %v", id)
-
-			}
-			if task.Status != "picked" {
-				return nil, fmt.Errorf("task is not picked yet: %v", id)
-
+				return nil, fmt.Errorf("failed to find task id: %v", voteExt.IDs[i])
 			}
 
-			currBlock, err := FetchTxn(task.Title)
+			if task.Status == "verified" {
+				return nil, fmt.Errorf("task is already verified: %v", voteExt.IDs[i])
+			}
+
+			txnDtls, err := FetchTxDetails(voteExt.TxHashs[i])
 			if err != nil {
-				return nil, fmt.Errorf("txn hash not found: %v", id)
+				return nil, fmt.Errorf("failed to fetch txn details: %w", err)
 			}
 
-			if currBlock < 2 {
-				return nil, fmt.Errorf("txn not mined yet: %v", id)
+			if txnDtls.To != "0x9ddB44C124E3e01D43ECEc91DD87B0BC9c4291FE" {
+				return nil, fmt.Errorf("failed to To address is wrong: %w", err)
 			}
 
+			//NOTE: we can verify data also for additional checks
+			// if txnDtls.Data != "0x" {
+			// 	return nil, fmt.Errorf("failed to fetch data: %w", err)
+			// }
 		}
 
 		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil

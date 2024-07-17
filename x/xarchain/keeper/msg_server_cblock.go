@@ -20,6 +20,7 @@ func (k msgServer) CreateCblock(goCtx context.Context, msg *types.MsgCreateCbloc
 	}
 
 	var cblock = types.Cblock{
+		Creator:     msg.Creator,
 		Blocknumber: msg.Blocknumber,
 	}
 
@@ -45,7 +46,7 @@ func (k msgServer) UpdateCblock(goCtx context.Context, msg *types.MsgUpdateCbloc
 	// }
 
 	var cblock = types.Cblock{
-		// Creator:     msg.Creator,
+		Creator:    msg.Creator,
 		Blocknumber: msg.Blocknumber,
 	}
 

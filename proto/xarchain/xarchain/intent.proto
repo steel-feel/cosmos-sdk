@@ -1,0 +1,16 @@
+syntax = "proto3";
+package xarchain.xarchain;
+
+option go_package = "xarchain/x/xarchain/types";
+
+message Intent {
+  string from = 1;
+  string to = 2; 
+  string data = 3; 
+  string value = 4; 
+  string status = 5; 
+  string chainId = 6; 
+  string txhash = 7; 
+  string filer = 8; 
+  uint64 id = 9; 
+}

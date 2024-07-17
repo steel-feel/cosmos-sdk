@@ -14,8 +14,8 @@ import (
 func TestCblockMsgServerCreate(t *testing.T) {
 	k, ctx := keepertest.XarchainKeeper(t)
 	srv := keeper.NewMsgServerImpl(k)
-	creator := "A"
-	expected := &types.MsgCreateCblock{Creator: creator}
+
+	expected := &types.MsgCreateCblock{}
 	_, err := srv.CreateCblock(ctx, expected)
 	require.NoError(t, err)
 	_, found := k.GetCblock(ctx)
@@ -24,7 +24,6 @@ func TestCblockMsgServerCreate(t *testing.T) {
 }
 
 func TestCblockMsgServerUpdate(t *testing.T) {
-	creator := "A"
 
 	tests := []struct {
 		desc    string
@@ -33,11 +32,11 @@ func TestCblockMsgServerUpdate(t *testing.T) {
 	}{
 		{
 			desc:    "Completed",
-			request: &types.MsgUpdateCblock{Creator: creator},
+			request: &types.MsgUpdateCblock{},
 		},
 		{
 			desc:    "Unauthorized",
-			request: &types.MsgUpdateCblock{Creator: "B"},
+			request: &types.MsgUpdateCblock{},
 			err:     sdkerrors.ErrUnauthorized,
 		},
 	}
@@ -45,7 +44,7 @@ func TestCblockMsgServerUpdate(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			k, ctx := keepertest.XarchainKeeper(t)
 			srv := keeper.NewMsgServerImpl(k)
-			expected := &types.MsgCreateCblock{Creator: creator}
+			expected := &types.MsgCreateCblock{}
 			_, err := srv.CreateCblock(ctx, expected)
 			require.NoError(t, err)
 
@@ -85,7 +84,7 @@ func TestCblockMsgServerDelete(t *testing.T) {
 			k, ctx := keepertest.XarchainKeeper(t)
 			srv := keeper.NewMsgServerImpl(k)
 
-			_, err := srv.CreateCblock(ctx, &types.MsgCreateCblock{Creator: creator})
+			_, err := srv.CreateCblock(ctx, &types.MsgCreateCblock{})
 			require.NoError(t, err)
 			_, err = srv.DeleteCblock(ctx, tc.request)
 			if tc.err != nil {

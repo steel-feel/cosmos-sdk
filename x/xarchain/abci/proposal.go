@@ -23,7 +23,9 @@ import (
 // Its kind of temp storage in block formation
 // before using this struct to commit the values to storage
 type SuccessTransactionsID struct {
-	TaskIDs            []uint64
+	IntentIDs            []uint64
+	TxHashs 		   []string
+	NextBlockHeight      int64
 	ExtendedCommitInfo abci.ExtendedCommitInfo
 }
 
@@ -51,19 +53,21 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				return nil, err
 			}
 
-			goodTxns, err := h.computeCAIds(ctx, req.LocalLastCommit)
+			cResp, err := h.computeCAIds(ctx, req.LocalLastCommit)
 			if err != nil {
 				return &abci.ResponsePrepareProposal{
 					Txs: proposalTxs,
 				}, nil
 			}
 
-			if len(goodTxns) == 0 {
+			if len(cResp.ComputedIDs) == 0 {
 				return nil, errors.New("no good transactions")
 			}
 
 			injectedVoteExtTx := SuccessTransactionsID{
-				TaskIDs:            goodTxns,
+				IntentIDs:            cResp.ComputedIDs,
+				TxHashs: cResp.ComputedTxHashs,
+				NextBlockHeight:      cResp.NextBlockHeight,
 				ExtendedCommitInfo: req.LocalLastCommit,
 			}
 
@@ -136,37 +140,57 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 
 		}
 
-		for _, taskID := range injectedVoteExtTx.TaskIDs {
-			task, found := h.keeper.GetTask(ctx, taskID)
+		for i := 0; i < len(injectedVoteExtTx.IntentIDs); i++ { 
+			intent, found := h.keeper.GetIntentById(ctx, injectedVoteExtTx.IntentIDs[i])
 			if !found {
-				h.logger.Error("failed to get Task %v", taskID)
-				return nil, fmt.Errorf("failed to get Task %v", taskID)
+				h.logger.Error("failed to get Task %v", injectedVoteExtTx.IntentIDs[i])
+				return nil, fmt.Errorf("failed to get Task %v", injectedVoteExtTx.IntentIDs[i])
 			}
+			intent.Status = "verified"
+			intent.Txhash = injectedVoteExtTx.TxHashs[i]
+			//NOTE: filer address could also be fetched from vote extension
+			//intent.Filer = fmt.Sprintf("%x", req.Validator.Address) 
 
-			task.Status = "verified"
-			h.keeper.SetTask(ctx, task)
-
+			h.keeper.SetIntent(ctx, intent)
 		}
+		cBlock, found := h.keeper.GetCblock(ctx)
+		if !found {
+			h.logger.Error("failed to get CBlock")
+			return nil, fmt.Errorf("failed to get CBlock")
+		}
+
+		cBlock.Blocknumber	= injectedVoteExtTx.NextBlockHeight
+
+		h.keeper.SetCblock(ctx, cBlock)
 	}
 
 	return res, nil
 }
 
-func (h *ProposalHandler) computeCAIds(ctx sdk.Context, ci abci.ExtendedCommitInfo) ([]uint64, error) {
+type ComputedResp struct {
+	ComputedIDs []uint64
+	ComputedTxHashs []string
+	NextBlockHeight int64
+}
+
+func (h *ProposalHandler) computeCAIds(ctx sdk.Context, ci abci.ExtendedCommitInfo) (*ComputedResp, error) {
 	var voteExt CAVoteExtension
-	var IDs []uint64
 	if len(ci.Votes) == 0 {
-		return IDs, errors.New("no votes in commit info")
+		return nil, errors.New("no votes in commit info")
 	}
 
 	if err := json.Unmarshal(ci.Votes[0].VoteExtension, &voteExt); err != nil {
 		h.logger.Error("failed to decode vote extension", "err", err, "validator", fmt.Sprintf("%x", ci.Votes[0].Validator.Address))
-		return IDs, err
+		return nil, err
 	}
 
 	if len(voteExt.IDs) == 0 {
-		return IDs, errors.New("no IDs in vote extension")
+		return nil, errors.New("no IDs in vote extension")
 	}
 
-	return voteExt.IDs, nil
+	return &ComputedResp{
+		ComputedIDs: voteExt.IDs,
+		ComputedTxHashs: voteExt.TxHashs,
+		NextBlockHeight: voteExt.Blocknumber,
+	}, nil
 }

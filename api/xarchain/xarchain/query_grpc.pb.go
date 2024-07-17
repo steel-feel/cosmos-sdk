@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_Params_FullMethodName   = "/xarchain.xarchain.Query/Params"
-	Query_ShowTask_FullMethodName = "/xarchain.xarchain.Query/ShowTask"
-	Query_ListTask_FullMethodName = "/xarchain.xarchain.Query/ListTask"
-	Query_Cblock_FullMethodName   = "/xarchain.xarchain.Query/Cblock"
+	Query_Params_FullMethodName    = "/xarchain.xarchain.Query/Params"
+	Query_ShowTask_FullMethodName  = "/xarchain.xarchain.Query/ShowTask"
+	Query_ListTask_FullMethodName  = "/xarchain.xarchain.Query/ListTask"
+	Query_Cblock_FullMethodName    = "/xarchain.xarchain.Query/Cblock"
+	Query_GetIntent_FullMethodName = "/xarchain.xarchain.Query/GetIntent"
 )
 
 // QueryClient is the client API for Query service.
@@ -37,6 +38,8 @@ type QueryClient interface {
 	ListTask(ctx context.Context, in *QueryListTaskRequest, opts ...grpc.CallOption) (*QueryListTaskResponse, error)
 	// Queries a Cblock by index.
 	Cblock(ctx context.Context, in *QueryGetCblockRequest, opts ...grpc.CallOption) (*QueryGetCblockResponse, error)
+	// Queries a list of GetIntent items.
+	GetIntent(ctx context.Context, in *QueryGetIntentRequest, opts ...grpc.CallOption) (*QueryGetIntentResponse, error)
 }
 
 type queryClient struct {
@@ -83,6 +86,15 @@ func (c *queryClient) Cblock(ctx context.Context, in *QueryGetCblockRequest, opt
 	return out, nil
 }
 
+func (c *queryClient) GetIntent(ctx context.Context, in *QueryGetIntentRequest, opts ...grpc.CallOption) (*QueryGetIntentResponse, error) {
+	out := new(QueryGetIntentResponse)
+	err := c.cc.Invoke(ctx, Query_GetIntent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -95,6 +107,8 @@ type QueryServer interface {
 	ListTask(context.Context, *QueryListTaskRequest) (*QueryListTaskResponse, error)
 	// Queries a Cblock by index.
 	Cblock(context.Context, *QueryGetCblockRequest) (*QueryGetCblockResponse, error)
+	// Queries a list of GetIntent items.
+	GetIntent(context.Context, *QueryGetIntentRequest) (*QueryGetIntentResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -113,6 +127,9 @@ func (UnimplementedQueryServer) ListTask(context.Context, *QueryListTaskRequest)
 }
 func (UnimplementedQueryServer) Cblock(context.Context, *QueryGetCblockRequest) (*QueryGetCblockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Cblock not implemented")
+}
+func (UnimplementedQueryServer) GetIntent(context.Context, *QueryGetIntentRequest) (*QueryGetIntentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIntent not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -199,6 +216,24 @@ func _Query_Cblock_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GetIntent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetIntentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetIntent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetIntent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetIntent(ctx, req.(*QueryGetIntentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -221,6 +256,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Cblock",
 			Handler:    _Query_Cblock_Handler,
+		},
+		{
+			MethodName: "GetIntent",
+			Handler:    _Query_GetIntent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -23,6 +23,8 @@ service Msg {
   rpc CreateCblock (MsgCreateCblock) returns (MsgCreateCblockResponse);
   rpc UpdateCblock (MsgUpdateCblock) returns (MsgUpdateCblockResponse);
   rpc DeleteCblock (MsgDeleteCblock) returns (MsgDeleteCblockResponse);
+  rpc CreateIntent (MsgCreateIntent) returns (MsgCreateIntentResponse);
+  rpc UpdateIntent (MsgUpdateIntent) returns (MsgUpdateIntentResponse);
 }
 // MsgUpdateParams is the Msg/UpdateParams request type.
 message MsgUpdateParams {
@@ -64,16 +66,16 @@ message MsgUpdateTaskResponse {}
 
 message MsgCreateCblock {
   option (cosmos.msg.v1.signer) = "creator";
-  string creator     = 1;
-  uint64 blocknumber = 3;
+  int64 blocknumber = 1;
+  string creator = 2;
 }
 
 message MsgCreateCblockResponse {}
 
 message MsgUpdateCblock {
   option (cosmos.msg.v1.signer) = "creator";
-  string creator     = 1;
-  uint64 blocknumber = 3;
+  int64 blocknumber = 1;
+  string creator = 2;
 }
 
 message MsgUpdateCblockResponse {}
@@ -84,4 +86,27 @@ message MsgDeleteCblock {
 }
 
 message MsgDeleteCblockResponse {}
+
+message MsgCreateIntent {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1;
+  string from    = 2;
+  string to      = 3;
+  string data    = 4;
+  string value   = 5;
+  string chainId = 6;
+}
+
+message MsgCreateIntentResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateIntent {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1;
+  string status  = 2;
+  uint64 id      = 3;
+}
+
+message MsgUpdateIntentResponse {}
 

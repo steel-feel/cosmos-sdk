@@ -2,13 +2,23 @@ package abci
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"math/big"
+	"strings"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
+
+type TxnDetails struct {
+	To       string
+	Data     string
+	IntentID uint64
+}
 
 func FetchTxn(txHashStr string) (uint64, error) {
 	clientURL := "https://rpc.ankr.com/arbitrum_sepolia"
@@ -49,4 +59,169 @@ func FetchTxn(txHashStr string) (uint64, error) {
 	}
 
 	return currNumber, nil
+}
+
+func FetchTxDetails(txHashStr string) (TxnDetails, error) {
+	var txnDetails TxnDetails
+	clientURL := "https://rpc.ankr.com/arbitrum_sepolia"
+
+	client, err := ethclient.Dial(clientURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	txHash := common.HexToHash(txHashStr)
+
+	ctx := context.Background()
+	receipt, err := client.TransactionReceipt(ctx, txHash)
+	if err != nil {
+		if err == ethereum.NotFound {
+			return txnDetails, nil
+		} else {
+			log.Fatalf("Failed to get transaction receipt: %v", err)
+		}
+		return txnDetails, err
+	}
+
+	if receipt.Status != 1 {
+		log.Fatalf("Transaction not mined or wrong: %v", err)
+		return txnDetails, errors.New("Transaction not mined or wrong")
+	}
+
+	tx, isPending, err := client.TransactionByHash(ctx, txHash)
+
+	if err != nil {
+		log.Fatalf("Failed to get transaction: %v", err)
+		return txnDetails, err
+	}
+
+	if isPending {
+		log.Fatalf("Transaction is pending")
+		return txnDetails, errors.New("Transaction is pending")
+	}
+
+	txnDetails.To = tx.To().String()
+	txnDetails.Data = fmt.Sprintf("%x", tx.Data())
+
+	// we can decode logs and make verification on them as well like txHash refer to intent ID
+	// receipt.Logs
+	return txnDetails, nil
+}
+
+type EmittedIntents struct {
+	ID     uint
+	TxHash string
+	Filer  string
+}
+
+type EventsResp struct {
+	Intents   []EmittedIntents
+	lastBlock int64
+}
+
+func GetToBlock(lastBlock int64, currBlockNumber int64) int64 {
+	if lastBlock+999 > currBlockNumber {
+		return currBlockNumber
+	} else {
+		return lastBlock + 999
+	}
+}
+
+func FetchEvents(lastBlock int64) (*EventsResp, error) {
+	clientURL := "https://rpc.ankr.com/arbitrum_sepolia"
+
+	client, err := ethclient.Dial(clientURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+		return nil, err
+
+	}
+
+	// Get the current block number
+	currBlockNumber, err := client.BlockNumber(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to get the block number: %v", err)
+		return nil, err
+
+	}
+
+	// var ToBlock *big.Int
+	// if currBlock+1000 > int64(currBlockNumber) {
+	// 	ToBlock = big.NewInt(int64(currBlockNumber))
+	// } else {
+	// 	ToBlock = big.NewInt(currBlock + 1000)
+	// }
+
+	ToBlock := GetToBlock(lastBlock, int64(currBlockNumber))
+
+	//to block should be the current block number or +999 whichever lower
+	contractAddress := common.HexToAddress("0x9ddB44C124E3e01D43ECEc91DD87B0BC9c4291FE") // Replace with your contract address
+	query := ethereum.FilterQuery{
+		FromBlock: big.NewInt(lastBlock),
+		ToBlock:   big.NewInt(ToBlock),
+		Addresses: []common.Address{
+			contractAddress,
+		},
+	}
+
+	logs, err := client.FilterLogs(context.Background(), query)
+	if err != nil {
+		log.Fatalf("Failed to retrieve logs: %v", err)
+		return nil, err
+
+	}
+
+	contractABI, err := abi.JSON(strings.NewReader(`[
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "filer",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "intentid",
+				"type": "uint256"
+			}
+		],
+		"name": "IntentFulfiled",
+		"type": "event"
+	}
+	]`))
+	if err != nil {
+		log.Fatalf("Failed to parse contract ABI: %v", err)
+		return nil, err
+	}
+
+	var emittedIntents []EmittedIntents
+
+	for _, vLog := range logs {
+		event := struct {
+			Filer    common.Address `json:"filer"`
+			IntentID *big.Int       `json:"intentid"`
+		}{}
+
+		err := contractABI.UnpackIntoInterface(&event, "IntentFulfiled", vLog.Data)
+		if err != nil {
+			log.Fatalf("Failed to unpack log data: %v", err)
+			return nil, err
+		}
+
+		fmt.Printf("Log: %+v\n", event)
+		emittedIntents = append(emittedIntents, EmittedIntents{
+			TxHash: vLog.TxHash.String(),
+			Filer:  event.Filer.String(),
+			ID:     uint(event.IntentID.Uint64()),
+		})
+	}
+
+	return &EventsResp{
+		Intents:   emittedIntents,
+		lastBlock: ToBlock,
+	}, nil
+
 }

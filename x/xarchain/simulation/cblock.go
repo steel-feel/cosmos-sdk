@@ -23,7 +23,7 @@ func SimulateMsgCreateCblock(
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 
 		msg := &types.MsgCreateCblock{
-			Creator: simAccount.Address.String(),
+			// Creator: simAccount.Address.String(),
 		}
 
 		_, found := k.GetCblock(ctx)
@@ -56,9 +56,9 @@ func SimulateMsgUpdateCblock(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		var (
-			simAccount    = simtypes.Account{}
-			msg           = &types.MsgUpdateCblock{}
-			_, found = k.GetCblock(ctx)
+			simAccount = simtypes.Account{}
+			msg        = &types.MsgUpdateCblock{}
+			_, found   = k.GetCblock(ctx)
 		)
 		if !found {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), "cblock store is empty"), nil, nil
@@ -68,7 +68,7 @@ func SimulateMsgUpdateCblock(
 		// if !found {
 		// 	return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), "cblock creator not found"), nil, nil
 		// }
-		msg.Creator = simAccount.Address.String()
+		//	msg.Creator = simAccount.Address.String()
 
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -95,9 +95,9 @@ func SimulateMsgDeleteCblock(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		var (
-			simAccount    = simtypes.Account{}
-			msg           = &types.MsgUpdateCblock{}
-			_, found = k.GetCblock(ctx)
+			simAccount = simtypes.Account{}
+			msg        = &types.MsgUpdateCblock{}
+			_, found   = k.GetCblock(ctx)
 		)
 		if !found {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), "cblock store is empty"), nil, nil
@@ -106,7 +106,7 @@ func SimulateMsgDeleteCblock(
 		// if !found {
 		// 	return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), "cblock creator not found"), nil, nil
 		// }
-		msg.Creator = simAccount.Address.String()
+		//	msg.Creator = simAccount.Address.String()
 
 		txCtx := simulation.OperationInput{
 			R:               r,

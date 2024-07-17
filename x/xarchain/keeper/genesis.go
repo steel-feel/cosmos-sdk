@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	// "github.com/cosmos/cosmos-sdk/x/auth/types"
-	xartypes	"xarchain/x/xarchain/types"
+	xartypes "xarchain/x/xarchain/types"
 )
 
 // InitGenesis - Init store state from genesis data
@@ -20,7 +20,6 @@ func (xk Keeper) InitGenesis(ctx sdk.Context, data xartypes.GenesisState) {
 	// 	panic(err)
 	// }
 	// accounts = types.SanitizeGenesisAccounts(accounts)
-
 
 	// var cblock = xartypes.Cblock{
 	// 	Blocknumber: 64201762 ,
