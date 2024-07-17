@@ -15,21 +15,6 @@ func (xk Keeper) InitGenesis(ctx sdk.Context, data xartypes.GenesisState) {
 		panic(err)
 	}
 
-	// accounts, err := types.UnpackAccounts(data.Accounts)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// accounts = types.SanitizeGenesisAccounts(accounts)
-
-	// var cblock = xartypes.Cblock{
-	// 	Blocknumber: 64201762 ,
-	// }
-
-	// xk.SetCblock(
-	// 	ctx,
-	// 	cblock,
-	// )
-
 }
 
 // ExportGenesis returns a GenesisState for a given context and keeper

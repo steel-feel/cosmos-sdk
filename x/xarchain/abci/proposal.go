@@ -13,6 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"xarchain/x/xarchain/keeper"
+	"xarchain/x/xarchain/types"
 )
 
 // StakeWeightedPrices defines the structure a proposer should use to calculate
@@ -23,9 +24,9 @@ import (
 // Its kind of temp storage in block formation
 // before using this struct to commit the values to storage
 type SuccessTransactionsID struct {
-	IntentIDs            []uint64
-	TxHashs 		   []string
-	NextBlockHeight      int64
+	IntentIDs          []uint64
+	TxHashs            []string
+	NextBlockHeight    int64
 	ExtendedCommitInfo abci.ExtendedCommitInfo
 }
 
@@ -53,23 +54,25 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 				return nil, err
 			}
 
-			cResp, err := h.computeCAIds(ctx, req.LocalLastCommit)
+			cResp, err := h.computeCAIds(req.LocalLastCommit)
 			if err != nil {
 				return &abci.ResponsePrepareProposal{
 					Txs: proposalTxs,
 				}, nil
 			}
 
-			if len(cResp.ComputedIDs) == 0 {
-				return nil, errors.New("no good transactions")
-			}
+			// if len(cResp.ComputedIDs) == 0 {
+			// 	return nil, errors.New("no good transactions")
+			// }
 
 			injectedVoteExtTx := SuccessTransactionsID{
-				IntentIDs:            cResp.ComputedIDs,
-				TxHashs: cResp.ComputedTxHashs,
-				NextBlockHeight:      cResp.NextBlockHeight,
+				IntentIDs:          cResp.ComputedIDs,
+				TxHashs:            cResp.ComputedTxHashs,
+				NextBlockHeight:    cResp.NextBlockHeight,
 				ExtendedCommitInfo: req.LocalLastCommit,
 			}
+
+			h.logger.Warn("inside prepare proposal", "NextBlockHeight", cResp.NextBlockHeight)
 
 			// NOTE: We use stdlib JSON encoding, but an application may choose to use
 			// a performant mechanism. This is for demo purposes only.
@@ -94,6 +97,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 
 func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestProcessProposal) (*abci.ResponseProcessProposal, error) {
+
 		if len(req.Txs) == 0 {
 			return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
 		}
@@ -128,6 +132,7 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 
 func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 	res := &sdk.ResponsePreBlock{}
+	h.logger.Warn("Txs len %v", "len tx", len(req.Txs))
 	if len(req.Txs) == 0 {
 		return res, nil
 	}
@@ -140,40 +145,44 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 
 		}
 
-		for i := 0; i < len(injectedVoteExtTx.IntentIDs); i++ { 
+		h.logger.Warn("inside Pre Blocker if condition")
+		// cBlock, found := h.keeper.GetCblock(ctx)
+		// if !found {
+		// 	h.logger.Error("failed to get CBlock")
+		// 	return nil, fmt.Errorf("failed to get CBlock")
+		// }
+		cBlock1 := types.Cblock{
+			Blocknumber: injectedVoteExtTx.NextBlockHeight,
+		}
+
+		h.keeper.SetCblock(ctx, cBlock1)
+
+		for i := 0; i < len(injectedVoteExtTx.IntentIDs); i++ {
 			intent, found := h.keeper.GetIntentById(ctx, injectedVoteExtTx.IntentIDs[i])
 			if !found {
-				h.logger.Error("failed to get Task %v", injectedVoteExtTx.IntentIDs[i])
-				return nil, fmt.Errorf("failed to get Task %v", injectedVoteExtTx.IntentIDs[i])
+				h.logger.Error("failed to get Intent %v", injectedVoteExtTx.IntentIDs[i])
+				return nil, fmt.Errorf("failed to get Intent %v", injectedVoteExtTx.IntentIDs[i])
 			}
 			intent.Status = "verified"
 			intent.Txhash = injectedVoteExtTx.TxHashs[i]
 			//NOTE: filer address could also be fetched from vote extension
-			//intent.Filer = fmt.Sprintf("%x", req.Validator.Address) 
+			//intent.Filer = fmt.Sprintf("%x", req.Validator.Address)
 
 			h.keeper.SetIntent(ctx, intent)
 		}
-		cBlock, found := h.keeper.GetCblock(ctx)
-		if !found {
-			h.logger.Error("failed to get CBlock")
-			return nil, fmt.Errorf("failed to get CBlock")
-		}
 
-		cBlock.Blocknumber	= injectedVoteExtTx.NextBlockHeight
-
-		h.keeper.SetCblock(ctx, cBlock)
 	}
 
 	return res, nil
 }
 
 type ComputedResp struct {
-	ComputedIDs []uint64
+	ComputedIDs     []uint64
 	ComputedTxHashs []string
 	NextBlockHeight int64
 }
 
-func (h *ProposalHandler) computeCAIds(ctx sdk.Context, ci abci.ExtendedCommitInfo) (*ComputedResp, error) {
+func (h *ProposalHandler) computeCAIds(ci abci.ExtendedCommitInfo) (*ComputedResp, error) {
 	var voteExt CAVoteExtension
 	if len(ci.Votes) == 0 {
 		return nil, errors.New("no votes in commit info")
@@ -184,12 +193,12 @@ func (h *ProposalHandler) computeCAIds(ctx sdk.Context, ci abci.ExtendedCommitIn
 		return nil, err
 	}
 
-	if len(voteExt.IDs) == 0 {
-		return nil, errors.New("no IDs in vote extension")
-	}
+	// if len(voteExt.IDs) == 0 {
+	// 	return nil, errors.New("no IDs in vote extension")
+	// }
 
 	return &ComputedResp{
-		ComputedIDs: voteExt.IDs,
+		ComputedIDs:     voteExt.IDs,
 		ComputedTxHashs: voteExt.TxHashs,
 		NextBlockHeight: voteExt.Blocknumber,
 	}, nil

@@ -28,7 +28,7 @@ func (k Keeper) AppendIntent(ctx sdk.Context, intent types.Intent) uint64 {
 	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
 	appendedValue := k.cdc.MustMarshal(&intent)
 	store.Set(GetPostIDBytes(intent.Id), appendedValue)
-	k.SetPostCount(ctx, count+1)
+	k.SetIntentCount(ctx, count+1)
 	return count
 }
 
@@ -60,8 +60,6 @@ func (k Keeper) SetIntent(ctx sdk.Context, intent types.Intent) {
 	b := k.cdc.MustMarshal(&intent)
 	store.Set(GetPostIDBytes(intent.Id), b)
 }
-
-
 
 func (k Keeper) GetTaskCount(ctx sdk.Context) uint64 {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))

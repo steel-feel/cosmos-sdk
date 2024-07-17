@@ -46,7 +46,7 @@ func (k msgServer) UpdateCblock(goCtx context.Context, msg *types.MsgUpdateCbloc
 	// }
 
 	var cblock = types.Cblock{
-		Creator:    msg.Creator,
+		Creator:     msg.Creator,
 		Blocknumber: msg.Blocknumber,
 	}
 

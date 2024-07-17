@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"xarchain/x/xarchain/types"
-
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,8 +17,12 @@ func (k Keeper) GetIntent(goCtx context.Context, req *types.QueryGetIntentReques
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Process the query
-	_ = ctx
+	intent, found := k.GetIntentById(ctx, req.Id)
+	if !found {
+		return nil, sdkerrors.ErrKeyNotFound
+	}
 
-	return &types.QueryGetIntentResponse{}, nil
+	return &types.QueryGetIntentResponse{
+		Intent:&intent,
+	}, nil
 }

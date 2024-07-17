@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log"
 	"math/big"
-	"strings"
+	// "strings"
 
 	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	// "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -171,45 +171,49 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 
 	}
 
-	contractABI, err := abi.JSON(strings.NewReader(`[
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "filer",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "intentid",
-				"type": "uint256"
-			}
-		],
-		"name": "IntentFulfiled",
-		"type": "event"
-	}
-	]`))
-	if err != nil {
-		log.Fatalf("Failed to parse contract ABI: %v", err)
-		return nil, err
-	}
+	// contractABI, err := abi.JSON(strings.NewReader(`[
+	// {
+	// 	"anonymous": false,
+	// 	"inputs": [
+	// 		{
+	// 			"indexed": true,
+	// 			"internalType": "address",
+	// 			"name": "filer",
+	// 			"type": "address"
+	// 		},
+	// 		{
+	// 			"indexed": true,
+	// 			"internalType": "uint256",
+	// 			"name": "intentid",
+	// 			"type": "uint256"
+	// 		}
+	// 	],
+	// 	"name": "IntentFulfiled",
+	// 	"type": "event"
+	// }
+	// ]`))
+	// if err != nil {
+	// 	log.Fatalf("Failed to parse contract ABI: %v", err)
+	// 	return nil, err
+	// }
 
 	var emittedIntents []EmittedIntents
 
 	for _, vLog := range logs {
 		event := struct {
-			Filer    common.Address `json:"filer"`
-			IntentID *big.Int       `json:"intentid"`
+			Filer    common.Address 
+			IntentID *big.Int   
 		}{}
 
-		err := contractABI.UnpackIntoInterface(&event, "IntentFulfiled", vLog.Data)
-		if err != nil {
-			log.Fatalf("Failed to unpack log data: %v", err)
-			return nil, err
-		}
+		// err := contractABI.UnpackIntoInterface(&event, "IntentFulfiled", vLog.Data)
+		// if err != nil {
+		// 	log.Fatalf("Failed to unpack log data: %v", err)
+		// 	return nil, err
+		// }
+
+		event.Filer = common.HexToAddress(vLog.Topics[1].Hex())
+        event.IntentID = new(big.Int)
+        event.IntentID.SetString(vLog.Topics[2].Hex()[2:], 16)
 
 		fmt.Printf("Log: %+v\n", event)
 		emittedIntents = append(emittedIntents, EmittedIntents{

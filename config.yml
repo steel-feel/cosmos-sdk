@@ -1,7 +1,8 @@
-version: 1
 validation: sovereign
-accounts: 
+version: 1
+accounts:
 - name: alice
+  mnemonic: play butter frown city voyage pupil rabbit wheat thrive mind skate turkey helmet thrive door either differ gate exhibit impose city swallow goat faint
   coins:
   - 20000token
   - 200000000stake
@@ -9,19 +10,21 @@ accounts:
   coins:
   - 10000token
   - 100000000stake
-client:
-  openapi:
-    path: docs/static/openapi.yml
 faucet:
   name: bob
   coins:
   - 5token
   - 100000stake
-validators:
-- name: alice
-  bonded: 100000000stake
+client:
+  typescript:
+    path: ts-client
+  openapi:
+    path: docs/static/openapi.yml
 genesis:
   consensus:
     params:
       abci:
-        vote_extensions_enable_height : "1"
+        vote_extensions_enable_height: "1"
+validators:
+- name: alice
+  bonded: 100000000stake

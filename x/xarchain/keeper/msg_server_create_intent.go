@@ -13,11 +13,11 @@ func (k msgServer) CreateIntent(goCtx context.Context, msg *types.MsgCreateInten
 
 	// TODO: Handling the message
 	var intent = types.Intent{
-		To: msg.To,
-		Value: msg.Value,
-		From: msg.From,
-		Data: msg.Data,
-		Status: "proposed",
+		To:      msg.To,
+		Value:   msg.Value,
+		From:    msg.From,
+		Data:    msg.Data,
+		Status:  "proposed",
 		ChainId: msg.ChainId,
 	}
 

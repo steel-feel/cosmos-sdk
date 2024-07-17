@@ -45,6 +45,12 @@ service Query {
     option (google.api.http).get = "/xarchain/xarchain/get_intent/{id}";
   
   }
+  
+  // Queries a list of ListIntent items.
+  rpc ListIntent (QueryListIntentRequest) returns (QueryListIntentResponse) {
+    option (google.api.http).get = "/xarchain/xarchain/list_intent";
+  
+  }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -70,7 +76,7 @@ message QueryListTaskRequest {
 
 message QueryListTaskResponse {
   repeated Task                                   task       = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetCblockRequest {}
@@ -85,5 +91,14 @@ message QueryGetIntentRequest {
 
 message QueryGetIntentResponse {
   Intent intent = 1;
+}
+
+message QueryListIntentRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryListIntentResponse {
+  repeated Intent intent = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
