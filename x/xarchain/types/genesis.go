@@ -7,7 +7,7 @@ const DefaultIndex uint64 = 1
 
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
-	var number int64 = 64524118
+	var number int64 = 65036590
 
 	return &GenesisState{
 		Cblock: &Cblock{
