@@ -32,7 +32,7 @@ func (k Keeper) ListIntent(ctx context.Context, req *types.QueryListIntentReques
 	})
 
 
-	fmt.Printf("tasks: %v\n", intents)
+	fmt.Printf("Intents: %v\n", intents)
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())

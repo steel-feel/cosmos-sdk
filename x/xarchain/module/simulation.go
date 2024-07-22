@@ -23,14 +23,6 @@ var (
 )
 
 const (
-	opWeightMsgCreateTask = "op_weight_msg_create_task"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateTask int = 100
-
-	opWeightMsgUpdateTask = "op_weight_msg_update_task"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateTask int = 100
-
 	opWeightMsgCreateCblock = "op_weight_msg_cblock"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateCblock int = 100

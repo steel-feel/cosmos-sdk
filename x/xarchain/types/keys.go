@@ -9,14 +9,7 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_xarchain"
-
-	// taskKey is used to uniquely identify tasks within the system.
-	// It will be used as the beginning of the key for each task, followed bei their unique ID
-	TaskKey = "Task/value/"
-
-	// This key will be used to keep track of the ID of the latest Task added to the store.
-	TaskCountKey = "Task/count/"
-
+	
 	// taskKey is used to uniquely identify tasks within the system.
 	// It will be used as the beginning of the key for each task, followed bei their unique ID
 	IntentKey = "Intent/value/"

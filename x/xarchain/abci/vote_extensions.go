@@ -94,13 +94,13 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 		//code for loop to len(voteExt.IDs)
 
 		for i := 0; i < len(voteExt.IDs); i++ {
-			task, found := h.Keeper.GetIntentById(ctx, uint64(voteExt.IDs[i]))
+			intent, found := h.Keeper.GetIntentById(ctx, uint64(voteExt.IDs[i]))
 			if !found {
 				return nil, fmt.Errorf("failed to find task id: %v", voteExt.IDs[i])
 			}
 
-			if task.Status == "verified" {
-				return nil, fmt.Errorf("task is already verified: %v", voteExt.IDs[i])
+			if intent.Status == "verified" {
+				return nil, fmt.Errorf("intent is already verified: %v", voteExt.IDs[i])
 			}
 
 			txnDtls, err := FetchTxDetails(voteExt.TxHashs[i])

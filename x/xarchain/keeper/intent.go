@@ -47,11 +47,32 @@ func (k Keeper) GetIntentById(ctx sdk.Context, id uint64) (val types.Intent, fou
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
+/*
+func (k Keeper) GetIntentByIntentHash(ctx sdk.Context, intentHash string) (val types.Intent, found bool) {
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
+	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.IntentKey))
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var intent types.Intent
+		k.cdc.MustUnmarshal(iterator.Value(), &intent)
+		if intent.IntentHash == intentHash {
+			return intent, true
+		}
+	}
+	return val, false
+}*/
 
 func GetPostIDBytes(id uint64) []byte {
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, id)
 	return bz
+}
+
+func GetIntentIdBytes(hash string) []byte {
+	return []byte(hash)
 }
 
 func (k Keeper) GetIntentCount(ctx sdk.Context) uint64 {
