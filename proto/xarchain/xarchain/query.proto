@@ -7,7 +7,6 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "xarchain/xarchain/params.proto";
-import "xarchain/xarchain/task.proto";
 import "xarchain/xarchain/cblock.proto";
 import "xarchain/xarchain/intent.proto";
 
@@ -19,18 +18,6 @@ service Query {
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/xarchain/xarchain/params";
-  
-  }
-  
-  // Queries a list of ShowTask items.
-  rpc ShowTask (QueryShowTaskRequest) returns (QueryShowTaskResponse) {
-    option (google.api.http).get = "/xarchain/xarchain/show_task/{id}";
-  
-  }
-  
-  // Queries a list of ListTask items.
-  rpc ListTask (QueryListTaskRequest) returns (QueryListTaskResponse) {
-    option (google.api.http).get = "/xarchain/xarchain/list_task";
   
   }
   
@@ -60,23 +47,6 @@ message QueryParamsResponse {
   
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-}
-
-message QueryShowTaskRequest {
-  uint64 id = 1;
-}
-
-message QueryShowTaskResponse {
-  Task task = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryListTaskRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryListTaskResponse {
-  repeated Task                                   task       = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetCblockRequest {}

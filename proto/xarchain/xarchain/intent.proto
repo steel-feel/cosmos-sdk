@@ -13,4 +13,5 @@ message Intent {
   string txhash = 7; 
   string filer = 8; 
   uint64 id = 9; 
+  string intentid = 10;
 }

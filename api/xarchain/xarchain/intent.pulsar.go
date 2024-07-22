@@ -13,16 +13,17 @@ import (
 )
 
 var (
-	md_Intent         protoreflect.MessageDescriptor
-	fd_Intent_from    protoreflect.FieldDescriptor
-	fd_Intent_to      protoreflect.FieldDescriptor
-	fd_Intent_data    protoreflect.FieldDescriptor
-	fd_Intent_value   protoreflect.FieldDescriptor
-	fd_Intent_status  protoreflect.FieldDescriptor
-	fd_Intent_chainId protoreflect.FieldDescriptor
-	fd_Intent_txhash  protoreflect.FieldDescriptor
-	fd_Intent_filer   protoreflect.FieldDescriptor
-	fd_Intent_id      protoreflect.FieldDescriptor
+	md_Intent          protoreflect.MessageDescriptor
+	fd_Intent_from     protoreflect.FieldDescriptor
+	fd_Intent_to       protoreflect.FieldDescriptor
+	fd_Intent_data     protoreflect.FieldDescriptor
+	fd_Intent_value    protoreflect.FieldDescriptor
+	fd_Intent_status   protoreflect.FieldDescriptor
+	fd_Intent_chainId  protoreflect.FieldDescriptor
+	fd_Intent_txhash   protoreflect.FieldDescriptor
+	fd_Intent_filer    protoreflect.FieldDescriptor
+	fd_Intent_id       protoreflect.FieldDescriptor
+	fd_Intent_intentid protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -37,6 +38,7 @@ func init() {
 	fd_Intent_txhash = md_Intent.Fields().ByName("txhash")
 	fd_Intent_filer = md_Intent.Fields().ByName("filer")
 	fd_Intent_id = md_Intent.Fields().ByName("id")
+	fd_Intent_intentid = md_Intent.Fields().ByName("intentid")
 }
 
 var _ protoreflect.Message = (*fastReflection_Intent)(nil)
@@ -158,6 +160,12 @@ func (x *fastReflection_Intent) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.Intentid != "" {
+		value := protoreflect.ValueOfString(x.Intentid)
+		if !f(fd_Intent_intentid, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -191,6 +199,8 @@ func (x *fastReflection_Intent) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Filer != ""
 	case "xarchain.xarchain.Intent.id":
 		return x.Id != uint64(0)
+	case "xarchain.xarchain.Intent.intentid":
+		return x.Intentid != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Intent"))
@@ -225,6 +235,8 @@ func (x *fastReflection_Intent) Clear(fd protoreflect.FieldDescriptor) {
 		x.Filer = ""
 	case "xarchain.xarchain.Intent.id":
 		x.Id = uint64(0)
+	case "xarchain.xarchain.Intent.intentid":
+		x.Intentid = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Intent"))
@@ -268,6 +280,9 @@ func (x *fastReflection_Intent) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "xarchain.xarchain.Intent.id":
 		value := x.Id
 		return protoreflect.ValueOfUint64(value)
+	case "xarchain.xarchain.Intent.intentid":
+		value := x.Intentid
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Intent"))
@@ -306,6 +321,8 @@ func (x *fastReflection_Intent) Set(fd protoreflect.FieldDescriptor, value proto
 		x.Filer = value.Interface().(string)
 	case "xarchain.xarchain.Intent.id":
 		x.Id = value.Uint()
+	case "xarchain.xarchain.Intent.intentid":
+		x.Intentid = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Intent"))
@@ -344,6 +361,8 @@ func (x *fastReflection_Intent) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field filer of message xarchain.xarchain.Intent is not mutable"))
 	case "xarchain.xarchain.Intent.id":
 		panic(fmt.Errorf("field id of message xarchain.xarchain.Intent is not mutable"))
+	case "xarchain.xarchain.Intent.intentid":
+		panic(fmt.Errorf("field intentid of message xarchain.xarchain.Intent is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Intent"))
@@ -375,6 +394,8 @@ func (x *fastReflection_Intent) NewField(fd protoreflect.FieldDescriptor) protor
 		return protoreflect.ValueOfString("")
 	case "xarchain.xarchain.Intent.id":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "xarchain.xarchain.Intent.intentid":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.Intent"))
@@ -479,6 +500,10 @@ func (x *fastReflection_Intent) ProtoMethods() *protoiface.Methods {
 		if x.Id != 0 {
 			n += 1 + runtime.Sov(uint64(x.Id))
 		}
+		l = len(x.Intentid)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -507,6 +532,13 @@ func (x *fastReflection_Intent) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Intentid) > 0 {
+			i -= len(x.Intentid)
+			copy(dAtA[i:], x.Intentid)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Intentid)))
+			i--
+			dAtA[i] = 0x52
 		}
 		if x.Id != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
@@ -893,6 +925,38 @@ func (x *fastReflection_Intent) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 10:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Intentid", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Intentid = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -946,15 +1010,16 @@ type Intent struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	To      string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
-	Data    string `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	Value   string `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
-	Status  string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
-	ChainId string `protobuf:"bytes,6,opt,name=chainId,proto3" json:"chainId,omitempty"`
-	Txhash  string `protobuf:"bytes,7,opt,name=txhash,proto3" json:"txhash,omitempty"`
-	Filer   string `protobuf:"bytes,8,opt,name=filer,proto3" json:"filer,omitempty"`
-	Id      uint64 `protobuf:"varint,9,opt,name=id,proto3" json:"id,omitempty"`
+	From     string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	To       string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
+	Data     string `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Value    string `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
+	Status   string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	ChainId  string `protobuf:"bytes,6,opt,name=chainId,proto3" json:"chainId,omitempty"`
+	Txhash   string `protobuf:"bytes,7,opt,name=txhash,proto3" json:"txhash,omitempty"`
+	Filer    string `protobuf:"bytes,8,opt,name=filer,proto3" json:"filer,omitempty"`
+	Id       uint64 `protobuf:"varint,9,opt,name=id,proto3" json:"id,omitempty"`
+	Intentid string `protobuf:"bytes,10,opt,name=intentid,proto3" json:"intentid,omitempty"`
 }
 
 func (x *Intent) Reset() {
@@ -1040,13 +1105,20 @@ func (x *Intent) GetId() uint64 {
 	return 0
 }
 
+func (x *Intent) GetIntentid() string {
+	if x != nil {
+		return x.Intentid
+	}
+	return ""
+}
+
 var File_xarchain_xarchain_intent_proto protoreflect.FileDescriptor
 
 var file_xarchain_xarchain_intent_proto_rawDesc = []byte{
 	0x0a, 0x1e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68,
 	0x61, 0x69, 0x6e, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x12, 0x11, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68,
-	0x61, 0x69, 0x6e, 0x22, 0xc6, 0x01, 0x0a, 0x06, 0x49, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x12, 0x12,
+	0x61, 0x69, 0x6e, 0x22, 0xe2, 0x01, 0x0a, 0x06, 0x49, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x12, 0x12,
 	0x0a, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x66, 0x72,
 	0x6f, 0x6d, 0x12, 0x0e, 0x0a, 0x02, 0x74, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
 	0x74, 0x6f, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
@@ -1058,19 +1130,20 @@ var file_xarchain_xarchain_intent_proto_rawDesc = []byte{
 	0x0a, 0x06, 0x74, 0x78, 0x68, 0x61, 0x73, 0x68, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
 	0x74, 0x78, 0x68, 0x61, 0x73, 0x68, 0x12, 0x14, 0x0a, 0x05, 0x66, 0x69, 0x6c, 0x65, 0x72, 0x18,
 	0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x66, 0x69, 0x6c, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02,
-	0x69, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x42, 0xad, 0x01, 0x0a,
-	0x15, 0x63, 0x6f, 0x6d, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x78, 0x61,
-	0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x42, 0x0b, 0x49, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x22, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
-	0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e,
-	0x2f, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xa2, 0x02, 0x03, 0x58, 0x58, 0x58, 0xaa,
-	0x02, 0x11, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x58, 0x61, 0x72, 0x63, 0x68,
-	0x61, 0x69, 0x6e, 0xca, 0x02, 0x11, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x58,
-	0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xe2, 0x02, 0x1d, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61,
-	0x69, 0x6e, 0x5c, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61,
-	0x69, 0x6e, 0x3a, 0x3a, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08,
+	0x69, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x69, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x69, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x69, 0x64, 0x42, 0xad, 0x01, 0x0a, 0x15, 0x63, 0x6f, 0x6d,
+	0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61,
+	0x69, 0x6e, 0x42, 0x0b, 0x49, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x22, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2f, 0x78, 0x61, 0x72,
+	0x63, 0x68, 0x61, 0x69, 0x6e, 0xa2, 0x02, 0x03, 0x58, 0x58, 0x58, 0xaa, 0x02, 0x11, 0x58, 0x61,
+	0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0xca,
+	0x02, 0x11, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x58, 0x61, 0x72, 0x63, 0x68,
+	0x61, 0x69, 0x6e, 0xe2, 0x02, 0x1d, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x58,
+	0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x3a, 0x3a,
+	0x58, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

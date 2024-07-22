@@ -94,7 +94,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 		//code for loop to len(voteExt.IDs)
 
 		for i := 0; i < len(voteExt.IDs); i++ {
-			task, found := h.Keeper.GetTask(ctx, uint64(voteExt.IDs[i]))
+			task, found := h.Keeper.GetIntentById(ctx, uint64(voteExt.IDs[i]))
 			if !found {
 				return nil, fmt.Errorf("failed to find task id: %v", voteExt.IDs[i])
 			}

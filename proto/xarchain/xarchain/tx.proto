@@ -18,8 +18,6 @@ service Msg {
   // UpdateParams defines a (governance) operation for updating the module
   // parameters. The authority defaults to the x/gov module account.
   rpc UpdateParams (MsgUpdateParams) returns (MsgUpdateParamsResponse);
-  rpc CreateTask   (MsgCreateTask  ) returns (MsgCreateTaskResponse  );
-  rpc UpdateTask   (MsgUpdateTask  ) returns (MsgUpdateTaskResponse  );
   rpc CreateCblock (MsgCreateCblock) returns (MsgCreateCblockResponse);
   rpc UpdateCblock (MsgUpdateCblock) returns (MsgUpdateCblockResponse);
   rpc DeleteCblock (MsgDeleteCblock) returns (MsgDeleteCblockResponse);
@@ -43,26 +41,6 @@ message MsgUpdateParams {
 // MsgUpdateParamsResponse defines the response structure for executing a
 // MsgUpdateParams message.
 message MsgUpdateParamsResponse {}
-
-message MsgCreateTask {
-  option (cosmos.msg.v1.signer) = "creator";
-  string creator = 1;
-  string title   = 2;
-}
-
-message MsgCreateTaskResponse {
-  uint64 id = 1;
-}
-
-message MsgUpdateTask {
-  option (cosmos.msg.v1.signer) = "creator";
-  string creator = 1;
-  string title   = 2;
-  string status  = 3;
-  uint64 id      = 4;
-}
-
-message MsgUpdateTaskResponse {}
 
 message MsgCreateCblock {
   option (cosmos.msg.v1.signer) = "creator";
@@ -95,6 +73,7 @@ message MsgCreateIntent {
   string data    = 4;
   string value   = 5;
   string chainId = 6;
+  string intentid = 7;
 }
 
 message MsgCreateIntentResponse {

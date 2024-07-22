@@ -10,6 +10,24 @@ import (
 	"xarchain/x/xarchain/types"
 )
 
+func (k Keeper) SetIntent(ctx sdk.Context, intent types.Intent) {
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
+	b := k.cdc.MustMarshal(&intent)
+	store.Set(GetPostIDBytes(intent.Id), b)
+}
+
+func (k Keeper) AppendIntent(ctx sdk.Context, intent types.Intent) uint64 {
+	count := k.GetIntentCount(ctx)
+	intent.Id = count
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
+	appendedValue := k.cdc.MustMarshal(&intent)
+	store.Set(GetPostIDBytes(intent.Id), appendedValue)
+	k.SetIntentCount(ctx, count+1)
+	return count
+}
+
 func (k Keeper) SetIntentCount(ctx sdk.Context, count uint64) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, []byte{})
@@ -18,3 +36,32 @@ func (k Keeper) SetIntentCount(ctx sdk.Context, count uint64) {
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(byteKey, bz)
 }
+
+func (k Keeper) GetIntentById(ctx sdk.Context, id uint64) (val types.Intent, found bool) {
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
+	b := store.Get(GetPostIDBytes(id))
+	if b == nil {
+		return val, false
+	}
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
+}
+
+func GetPostIDBytes(id uint64) []byte {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, id)
+	return bz
+}
+
+func (k Keeper) GetIntentCount(ctx sdk.Context) uint64 {
+	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	store := prefix.NewStore(storeAdapter, []byte{})
+	byteKey := types.KeyPrefix(types.IntentCountKey)
+	bz := store.Get(byteKey)
+	if bz == nil {
+		return 0
+	}
+	return binary.BigEndian.Uint64(bz)
+}
+

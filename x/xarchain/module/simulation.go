@@ -74,28 +74,6 @@ func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgCreateTask int
-	simState.AppParams.GetOrGenerate(opWeightMsgCreateTask, &weightMsgCreateTask, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateTask = defaultWeightMsgCreateTask
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateTask,
-		xarchainsimulation.SimulateMsgCreateTask(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgUpdateTask int
-	simState.AppParams.GetOrGenerate(opWeightMsgUpdateTask, &weightMsgUpdateTask, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateTask = defaultWeightMsgUpdateTask
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateTask,
-		xarchainsimulation.SimulateMsgUpdateTask(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgCreateCblock int
 	simState.AppParams.GetOrGenerate(opWeightMsgCreateCblock, &weightMsgCreateCblock, nil,
 		func(_ *rand.Rand) {
@@ -159,22 +137,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return []simtypes.WeightedProposalMsg{
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgCreateTask,
-			defaultWeightMsgCreateTask,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				xarchainsimulation.SimulateMsgCreateTask(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgUpdateTask,
-			defaultWeightMsgUpdateTask,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				xarchainsimulation.SimulateMsgUpdateTask(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
 		simulation.NewWeightedProposalMsg(
 			opWeightMsgCreateCblock,
 			defaultWeightMsgCreateCblock,
