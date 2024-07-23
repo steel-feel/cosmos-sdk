@@ -145,13 +145,6 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 
 	}
 
-	// var ToBlock *big.Int
-	// if currBlock+1000 > int64(currBlockNumber) {
-	// 	ToBlock = big.NewInt(int64(currBlockNumber))
-	// } else {
-	// 	ToBlock = big.NewInt(currBlock + 1000)
-	// }
-
 	ToBlock := GetToBlock(lastBlock, int64(currBlockNumber))
 
 	//to block should be the current block number or +999 whichever lower
@@ -171,32 +164,6 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 
 	}
 
-	// contractABI, err := abi.JSON(strings.NewReader(`[
-	// {
-	// 	"anonymous": false,
-	// 	"inputs": [
-	// 		{
-	// 			"indexed": true,
-	// 			"internalType": "address",
-	// 			"name": "filer",
-	// 			"type": "address"
-	// 		},
-	// 		{
-	// 			"indexed": true,
-	// 			"internalType": "uint256",
-	// 			"name": "intentid",
-	// 			"type": "uint256"
-	// 		}
-	// 	],
-	// 	"name": "IntentFulfiled",
-	// 	"type": "event"
-	// }
-	// ]`))
-	// if err != nil {
-	// 	log.Fatalf("Failed to parse contract ABI: %v", err)
-	// 	return nil, err
-	// }
-
 	var emittedIntents []EmittedIntents
 
 	for _, vLog := range logs {
@@ -204,12 +171,6 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 			Filer    common.Address 
 			IntentID *big.Int   
 		}{}
-
-		// err := contractABI.UnpackIntoInterface(&event, "IntentFulfiled", vLog.Data)
-		// if err != nil {
-		// 	log.Fatalf("Failed to unpack log data: %v", err)
-		// 	return nil, err
-		// }
 
 		event.Filer = common.HexToAddress(vLog.Topics[1].Hex())
         event.IntentID = new(big.Int)
