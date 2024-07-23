@@ -48,7 +48,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestPrepareProposal) (*abci.ResponsePrepareProposal, error) {
 		proposalTxs := req.Txs
 
-		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
+		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight && ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight != 0  {
 			/// NOTE: should not be commented out in production
 			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
 			if err != nil {
@@ -87,7 +87,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			// and store the canonical stake-weighted average prices.
 			proposalTxs = append(proposalTxs, bz)
 	
-				}
+		}
 
 		// proceed with normal block proposal construction, e.g. POB, normal txs, etc...
 
@@ -103,7 +103,7 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 		if len(req.Txs) == 0 {
 			return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
 		}
-		if req.Height > ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
+		if req.Height > ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight  {
 			var injectedVoteExtTx SuccessTransactionsID
 			if err := json.Unmarshal(req.Txs[0], &injectedVoteExtTx); err != nil {
 				h.logger.Error("failed to decode proccess Proposal", "err", err)
@@ -111,10 +111,14 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 				return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
 			}
 
+			h.logger.Warn("inside process proposal", "NextBlockHeight", injectedVoteExtTx.NextBlockHeight)
+
+			// NOTE: We can validate the vote extension here, but we'll do it in the production
 			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), injectedVoteExtTx.ExtendedCommitInfo)
 			if err != nil {
 				return nil, err
 			}
+
 		}
 
 		return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
