@@ -48,7 +48,7 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *abci.RequestPrepareProposal) (*abci.ResponsePrepareProposal, error) {
 		proposalTxs := req.Txs
 
-		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight && ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight != 0 {
+		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
 			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
 			if err != nil {
 				return nil, err
@@ -85,7 +85,8 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 			// Inject a "fake" tx into the proposal s.t. validators can decode, verify,
 			// and store the canonical stake-weighted average prices.
 			proposalTxs = append(proposalTxs, bz)
-		}
+	
+				}
 
 		// proceed with normal block proposal construction, e.g. POB, normal txs, etc...
 
@@ -115,24 +116,13 @@ func (h *ProposalHandler) ProcessProposal() sdk.ProcessProposalHandler {
 			}
 		}
 
-		// // Verify the proposer's stake-weighted oracle prices by computing the same
-		// // calculation and comparing the results. We omit verification for brevity
-		// // and demo purposes.
-		// goodTxns, err := h.computeCAIds(ctx, injectedVoteExtTx.ExtendedCommitInfo)
-		// if err != nil {
-		// 	return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-		// }
-		// if err := compareOraclePrices(injectedVoteExtTx.StakeWeightedPrices, stakeWeightedPrices); err != nil {
-		// 	return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_REJECT}, nil
-		// }
-
 		return &abci.ResponseProcessProposal{Status: abci.ResponseProcessProposal_ACCEPT}, nil
 	}
 }
 
 func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 	res := &sdk.ResponsePreBlock{}
-	h.logger.Warn("Txs len %v", "len tx", len(req.Txs))
+	h.logger.Warn("Txs len", "len tx", len(req.Txs))
 	if len(req.Txs) == 0 {
 		return res, nil
 	}
@@ -146,11 +136,7 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 		}
 
 		h.logger.Warn("inside Pre Blocker if condition")
-		// cBlock, found := h.keeper.GetCblock(ctx)
-		// if !found {
-		// 	h.logger.Error("failed to get CBlock")
-		// 	return nil, fmt.Errorf("failed to get CBlock")
-		// }
+	
 		cBlock1 := types.Cblock{
 			Blocknumber: injectedVoteExtTx.NextBlockHeight,
 		}
