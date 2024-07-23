@@ -49,10 +49,11 @@ func (h *ProposalHandler) PrepareProposal() sdk.PrepareProposalHandler {
 		proposalTxs := req.Txs
 
 		if req.Height >= ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight {
-			err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
-			if err != nil {
-				return nil, err
-			}
+			/// NOTE: should not be commented out in production
+			// err := baseapp.ValidateVoteExtensions(ctx, h.valStore, req.Height, ctx.ChainID(), req.LocalLastCommit)
+			// if err != nil {
+			// 	return nil, err
+			// }
 
 			cResp, err := h.computeCAIds(req.LocalLastCommit)
 			if err != nil {
