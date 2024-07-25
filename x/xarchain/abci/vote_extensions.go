@@ -7,9 +7,13 @@ import (
 	"cosmossdk.io/log"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"os"
+	"time"
 	"xarchain/x/xarchain/keeper"
+	"xarchain/x/xarchain/types"
 )
 
 type VoteExtHandler struct {
@@ -47,10 +51,14 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			return nil, fmt.Errorf("failed to get last block")
 		}
 
+		beforeEvent := time.Now()
+
 		eventResp, err := FetchEvents(lastBlock.Blocknumber)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch events: %w", err)
 		}
+
+		afterEvent := time.Now()
 
 		var IDs []uint64
 		var TxHashs []string
@@ -59,6 +67,18 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			TxHashs = append(TxHashs, intent.TxHash)
 		}
 
+		f, err := os.OpenFile("/Users/himank/voteExt.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open file: %w", err)
+		}
+		// f.Write([]byte(fmt.Sprintf("Time taken to fetch events: %v, no of events %v \n", afterEvent.Sub(beforeEvent), len(eventResp.Intents) )) )
+		f.WriteString(fmt.Sprintf("Blocknumber %v, Time taken to fetch events: %v, no of events %v \n", req.Height , afterEvent.Sub(beforeEvent), len(eventResp.Intents) ))
+		f.Sync()
+		defer f.Close()
+		
+		// defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
+
+		
 		voteExt := CAVoteExtension{
 			IDs:         IDs,
 			Blocknumber: eventResp.lastBlock,
@@ -90,7 +110,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 		if len(voteExt.IDs) != len(voteExt.TxHashs) {
 			return nil, fmt.Errorf("vote extension IDs and TxHashs length mismatch")
 		}
-
+		beforeEvent := time.Now()
 		//code for loop to len(voteExt.IDs)
 
 		for i := 0; i < len(voteExt.IDs); i++ {
@@ -117,6 +137,17 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			// 	return nil, fmt.Errorf("failed to fetch data: %w", err)
 			// }
 		}
+
+		afterEvent := time.Now()
+		f, err := os.OpenFile("/Users/himank/verifyVote.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return nil, fmt.Errorf("failed to open file: %w", err)
+		}
+		defer f.Close()
+		f.WriteString(fmt.Sprintf("Blocknumber %v, Time taken to fetch events: %v, no of events %v \n", req.Height , afterEvent.Sub(beforeEvent), len(voteExt.IDs) ))
+		f.Sync()
+		
+		defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
 
 		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}
