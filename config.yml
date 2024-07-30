@@ -30,7 +30,7 @@ validators:
 - name: alice
   bonded: 100000000stake
   app:
-    minimum-gas-prices: 0.25stake
+    minimum-gas-prices: 0stake
     telemetry:
       enabled: true
       global-labels: [ xarchai , xarchai2 ]

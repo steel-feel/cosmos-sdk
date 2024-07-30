@@ -25,6 +25,15 @@ func (k Keeper) AppendIntent(ctx sdk.Context, intent types.Intent) uint64 {
 	appendedValue := k.cdc.MustMarshal(&intent)
 	store.Set(GetPostIDBytes(intent.Id), appendedValue)
 	k.SetIntentCount(ctx, count+1)
+
+	if err := ctx.EventManager().EmitTypedEvent(&types.IntentEvent{
+		Intentid: intent.Intentid,
+		Chainid: intent.ChainId,
+		Txhash: intent.Txhash,
+	}); err != nil {
+		return 0
+	}
+
 	return count
 }
 

@@ -51,3 +51,20 @@ curl https://get.ignite.com/username/xarchain@latest! | sudo bash
 - [Ignite CLI docs](https://docs.ignite.com)
 - [Cosmos SDK docs](https://docs.cosmos.network)
 - [Developer Chat](https://discord.gg/ignite)
+
+
+# Websocket Intent event subscription
+
+URL : `ws://<cosmos-node>:26657/websocket`
+
+Body : 
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "subscribe",
+    "id": 0,
+    "params": {
+        "query": "message.action='/xarchain.xarchain.MsgCreateIntent'" 
+    }
+}
+```

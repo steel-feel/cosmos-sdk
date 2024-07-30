@@ -166,7 +166,7 @@ func FetchEvents(FromBlock int64) (*EventsResp, error) {
 
 	logs, err := client.FilterLogs(context.Background(), query)
 	if err != nil {
-		log.Fatalf("Failed to retrieve logs: %v", err)
+		log.Fatalf("Failed to retrieve logs: %v, From: %v, To: %v  ", err, FromBlock+1, ToBlock)
 		return nil, err
 	}
 

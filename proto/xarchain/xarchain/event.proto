@@ -1,0 +1,10 @@
+syntax = "proto3";
+package xarchain.xarchain;
+
+option go_package = "xarchain/x/xarchain/types";
+
+message IntentEvent {
+  string intentid = 1;
+  string chainid = 2;
+  string txhash = 3;
+}
