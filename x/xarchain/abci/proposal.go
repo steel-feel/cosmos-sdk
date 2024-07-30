@@ -191,6 +191,6 @@ func (h *ProposalHandler) computeCAIds(ci abci.ExtendedCommitInfo) (*ComputedRes
 	return &ComputedResp{
 		ComputedIDs:     voteExt.IDs,
 		ComputedTxHashs: voteExt.TxHashs,
-		NextBlockHeight: voteExt.Blocknumber,
+		NextBlockHeight: voteExt.To,
 	}, nil
 }

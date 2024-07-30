@@ -115,8 +115,9 @@ type EmittedIntents struct {
 }
 
 type EventsResp struct {
-	Intents   []EmittedIntents
-	lastBlock int64
+	Intents []EmittedIntents
+	From    int64
+	To      int64
 }
 
 func GetToBlock(lastBlock int64, currBlockNumber int64) int64 {
@@ -127,7 +128,7 @@ func GetToBlock(lastBlock int64, currBlockNumber int64) int64 {
 	}
 }
 
-func FetchEvents(lastBlock int64) (*EventsResp, error) {
+func FetchEvents(FromBlock int64) (*EventsResp, error) {
 	clientURL := "https://rpc.ankr.com/arbitrum_sepolia"
 
 	client, err := ethclient.Dial(clientURL)
@@ -145,12 +146,18 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 
 	}
 
-	ToBlock := GetToBlock(lastBlock, int64(currBlockNumber))
+	ToBlock := GetToBlock(FromBlock, int64(currBlockNumber))
+	if ToBlock == FromBlock {
+		return &EventsResp{
+			Intents:   []EmittedIntents{},
+			To: ToBlock,
+			From: ToBlock,
+		}, nil
+	}
 
-	//to block should be the current block number or +999 whichever lower
-	contractAddress := common.HexToAddress("0x9ddB44C124E3e01D43ECEc91DD87B0BC9c4291FE") // Replace with your contract address
+	contractAddress := common.HexToAddress("0x9ddB44C124E3e01D43ECEc91DD87B0BC9c4291FE")
 	query := ethereum.FilterQuery{
-		FromBlock: big.NewInt(lastBlock),
+		FromBlock: big.NewInt(FromBlock+1),
 		ToBlock:   big.NewInt(ToBlock),
 		Addresses: []common.Address{
 			contractAddress,
@@ -161,22 +168,19 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 	if err != nil {
 		log.Fatalf("Failed to retrieve logs: %v", err)
 		return nil, err
-
 	}
 
 	var emittedIntents []EmittedIntents
-
 	for _, vLog := range logs {
 		event := struct {
-			Filer    common.Address 
-			IntentID *big.Int   
+			Filer    common.Address
+			IntentID *big.Int
 		}{}
 
 		event.Filer = common.HexToAddress(vLog.Topics[1].Hex())
-        event.IntentID = new(big.Int)
-        event.IntentID.SetString(vLog.Topics[2].Hex()[2:], 16)
+		event.IntentID = new(big.Int)
+		event.IntentID.SetString(vLog.Topics[2].Hex()[2:], 16)
 
-		fmt.Printf("Log: %+v\n", event)
 		emittedIntents = append(emittedIntents, EmittedIntents{
 			TxHash: vLog.TxHash.String(),
 			Filer:  event.Filer.String(),
@@ -186,7 +190,8 @@ func FetchEvents(lastBlock int64) (*EventsResp, error) {
 
 	return &EventsResp{
 		Intents:   emittedIntents,
-		lastBlock: ToBlock,
+		To: ToBlock,
+		From: FromBlock+1 ,
 	}, nil
 
 }

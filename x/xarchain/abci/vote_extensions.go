@@ -28,10 +28,11 @@ defines the canonical vote extension structure.
 this is the object that will be marshaled as bytes and signed by the validator.
 */
 type CAVoteExtension struct {
-	Height      uint64
-	Blocknumber int64
-	IDs         []uint64
-	TxHashs     []string
+	Height  int64
+	From    int64
+	To      int64
+	IDs     []uint64
+	TxHashs []string
 }
 
 func NewCAExtHandler(
@@ -46,14 +47,30 @@ func NewCAExtHandler(
 
 func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
-		lastBlock, found := h.Keeper.GetCblock(ctx)
+		//fetch the state of genesis block
+		lastCBlock, found := h.Keeper.GetCblock(ctx)
 		if !found {
 			return nil, fmt.Errorf("failed to get last block")
 		}
 
+		//fetch the block number from proposal txs
+		FromBlock := lastCBlock.Blocknumber
+		var injectedVoteExtTx SuccessTransactionsID
+
+		//check if any changes to setBlock is registered in the proposal txs
+		for _, txn := range req.Txs {
+			if err := json.Unmarshal(txn, &injectedVoteExtTx); err != nil {
+				continue
+			}
+		}
+
+		if FromBlock < injectedVoteExtTx.NextBlockHeight {
+			FromBlock = injectedVoteExtTx.NextBlockHeight
+		}
 		beforeEvent := time.Now()
 
-		eventResp, err := FetchEvents(lastBlock.Blocknumber)
+		//Fetch events,
+		eventResp, err := FetchEvents(FromBlock)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch events: %w", err)
 		}
@@ -67,23 +84,22 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			TxHashs = append(TxHashs, intent.TxHash)
 		}
 
+		// Internal file based telemetery
 		f, err := os.OpenFile("/Users/himank/voteExt.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return nil, fmt.Errorf("failed to open file: %w", err)
 		}
-		// f.Write([]byte(fmt.Sprintf("Time taken to fetch events: %v, no of events %v \n", afterEvent.Sub(beforeEvent), len(eventResp.Intents) )) )
-		f.WriteString(fmt.Sprintf("Blocknumber %v, Time taken to fetch events: %v, no of events %v \n", req.Height , afterEvent.Sub(beforeEvent), len(eventResp.Intents) ))
+
+		f.WriteString(fmt.Sprintf("Cosmos height %v, From Block : %v , To Block: %v , Time taken to fetch events: %v, no of events %v \n", req.Height, eventResp.From, eventResp.To, afterEvent.Sub(beforeEvent), len(eventResp.Intents)))
 		f.Sync()
 		defer f.Close()
-		
-		// defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
 
-		
 		voteExt := CAVoteExtension{
-			IDs:         IDs,
-			Blocknumber: eventResp.lastBlock,
-			Height:      uint64(req.Height),
-			TxHashs:     TxHashs,
+			Height:  req.Height,
+			From:    eventResp.From,
+			To:      eventResp.To,
+			IDs:     IDs,
+			TxHashs: TxHashs,
 		}
 
 		bz, err := json.Marshal(voteExt)
@@ -103,7 +119,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			return nil, fmt.Errorf("failed to unmarshal vote extension: %w", err)
 		}
 
-		if voteExt.Height != uint64(req.Height) {
+		if voteExt.Height != req.Height {
 			return nil, fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
 		}
 
@@ -144,10 +160,10 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			return nil, fmt.Errorf("failed to open file: %w", err)
 		}
 		defer f.Close()
-		f.WriteString(fmt.Sprintf("Blocknumber %v, Time taken to fetch events: %v, no of events %v \n", req.Height , afterEvent.Sub(beforeEvent), len(voteExt.IDs) ))
+		f.WriteString(fmt.Sprintf("Blocknumber %v, Time taken to fetch events: %v, no of events %v \n", req.Height, afterEvent.Sub(beforeEvent), len(voteExt.IDs)))
 		f.Sync()
-		
-		defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
+
+		defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2")
 
 		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}
