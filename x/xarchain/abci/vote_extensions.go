@@ -5,19 +5,25 @@ import (
 	"fmt"
 
 	"cosmossdk.io/log"
+	"golang.org/x/sync/errgroup"
 
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cosmos/cosmos-sdk/telemetry"
+	// "github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"os"
+	// "os"
 	"time"
 	"xarchain/x/xarchain/keeper"
-	"xarchain/x/xarchain/types"
+	// "xarchain/x/xarchain/types"
 )
 
 type VoteExtHandler struct {
-	logger log.Logger // current block height
+	logger          log.Logger
+	Height          int64               // current block height
+	lastPriceSyncTS time.Time           // last time we synced prices
+	providerTimeout time.Duration       // timeout for fetching prices from providers
+	providers       map[string]Provider // mapping of chain-id to provider (e.g. 421614 -> Arbitrum Sepolia eth client)
+
 	Keeper keeper.Keeper
 }
 
@@ -28,87 +34,122 @@ defines the canonical vote extension structure.
 this is the object that will be marshaled as bytes and signed by the validator.
 */
 type CAVoteExtension struct {
-	Height  int64
+	Height    int64
+	EventData map[string]IntentData // map of chainId to intent data
+}
+
+type IntentData struct {
 	From    int64
 	To      int64
-	IDs     []uint64
-	TxHashs []string
+	IDs     []string
 }
 
 func NewCAExtHandler(
-	logger log.Logger, // current block height             // last time we synced prices
+	logger log.Logger, 
 	keeper keeper.Keeper,
+	Timeout time.Duration,
+	supportedProviders map[string]string, /// NOTE: this is a map of chain-id to provider RPC URL
+
 ) *VoteExtHandler {
 	return &VoteExtHandler{
 		logger: logger,
 		Keeper: keeper,
+		providers: NewProvider(supportedProviders),
+		providerTimeout: Timeout,
 	}
 }
 
 func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
-	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error) {
-		//fetch the state of genesis block
-		lastCBlock, found := h.Keeper.GetCblock(ctx)
-		if !found {
-			return nil, fmt.Errorf("failed to get last block")
-		}
+	return func(ctx sdk.Context, req *abci.RequestExtendVote) (*abci.ResponseExtendVote, error){
+			h.Height = req.Height
+			h.lastPriceSyncTS = time.Now()
+		
+			g := new(errgroup.Group)
+			providerAgg := NewProviderAggregator()
+		
+			var injectedVoteExtTx VoteExtensionTransaction
+			// fetch previous from/to block numbers from txns
+			if req.Height > 0 {
+				for _, txn := range req.Txs {
+					if err := json.Unmarshal(txn, &injectedVoteExtTx); err != nil {
+						continue
+					}
+				}
+			} 
 
-		//fetch the block number from proposal txs
-		FromBlock := lastCBlock.Blocknumber
-		var injectedVoteExtTx SuccessTransactionsID
+			for chainId, provider := range h.providers {
+				
+				// Launch a goroutine to fetch events from provider.
+				// Recall, vote extensions are not required to be deterministic.
+				g.Go(func() error {
+					doneCh := make(chan bool, 1)
+					errCh := make(chan error, 1)
+	
+					var (
+						intents map[string]EventsResp
+						err    error
+					)
 
-		//check if any changes to setBlock is registered in the proposal txs
-		for _, txn := range req.Txs {
-			if err := json.Unmarshal(txn, &injectedVoteExtTx); err != nil {
-				continue
+					intents = make(map[string]EventsResp,3)
+	
+					go func() {
+						
+						tData, err1 := provider.FetchEvents(injectedVoteExtTx.IntentData[chainId].From, injectedVoteExtTx.IntentData[chainId].To)
+						if err1 != nil {
+							h.logger.Error("failed to fetch events from chain provider", "chainId", chainId, "err", err)
+							errCh <- err
+						}
+						h.logger.Debug("Fetched events from chain provider", "chainId", chainId, "events", tData)
+
+						intents[chainId] = tData
+
+						doneCh <- true
+					}()
+	
+					select {
+					case <-doneCh:
+						break
+	
+					case err := <-errCh:
+						return err
+	
+					case <-time.After(h.providerTimeout):
+						return fmt.Errorf("provider of chain %s timed out", chainId )
+					}
+	
+					// aggregate and collect prices based on the base currency per provider
+					for chainID, iData := range intents {
+						success := providerAgg.SetIntentData(chainID, iData)
+						if !success {
+							return fmt.Errorf("failed to find any exchange rates in provider responses")
+						}
+					}
+	
+					return nil
+				})
 			}
+	
+			if err := g.Wait(); err != nil {
+				// We failed to get some or all prices from providers. In the case that
+				// all prices fail, computeOraclePrices below will return an error.
+				h.logger.Error("failed to fetch events", "err", err)
+			}
+	
+			// produce a canonical vote extension
+			voteExt := CAVoteExtension{
+				Height: req.Height,
+				EventData: providerAgg.providerEvents,
+			}
+		
+			// NOTE: We use stdlib JSON encoding, but an application may choose to use
+			// a performant mechanism.
+			bz, err := json.Marshal(voteExt)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
+			}
+	
+			return &abci.ResponseExtendVote{VoteExtension: bz}, nil
 		}
-
-		if FromBlock < injectedVoteExtTx.NextBlockHeight {
-			FromBlock = injectedVoteExtTx.NextBlockHeight
-		}
-		beforeEvent := time.Now()
-
-		//Fetch events,
-		eventResp, err := FetchEvents(FromBlock)
-		if err != nil {
-			return nil, fmt.Errorf("failed to fetch events: %w", err)
-		}
-
-		afterEvent := time.Now()
-
-		var IDs []uint64
-		var TxHashs []string
-		for _, intent := range eventResp.Intents {
-			IDs = append(IDs, uint64(intent.ID))
-			TxHashs = append(TxHashs, intent.TxHash)
-		}
-
-		// Internal file based telemetery
-		f, err := os.OpenFile("/Users/himank/voteExt.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open file: %w", err)
-		}
-
-		f.WriteString(fmt.Sprintf("Cosmos height %v, From Block : %v , To Block: %v , Time taken to fetch events: %v, no of events %v \n", req.Height, eventResp.From, eventResp.To, afterEvent.Sub(beforeEvent), len(eventResp.Intents)))
-		f.Sync()
-		defer f.Close()
-
-		voteExt := CAVoteExtension{
-			Height:  req.Height,
-			From:    eventResp.From,
-			To:      eventResp.To,
-			IDs:     IDs,
-			TxHashs: TxHashs,
-		}
-
-		bz, err := json.Marshal(voteExt)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal vote extension: %w", err)
-		}
-
-		return &abci.ResponseExtendVote{VoteExtension: bz}, nil
-	}
 }
 
 func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
@@ -123,48 +164,8 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			return nil, fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
 		}
 
-		if len(voteExt.IDs) != len(voteExt.TxHashs) {
-			return nil, fmt.Errorf("vote extension IDs and TxHashs length mismatch")
-		}
-		beforeEvent := time.Now()
-		//code for loop to len(voteExt.IDs)
-
-		for i := 0; i < len(voteExt.IDs); i++ {
-			intent, found := h.Keeper.GetIntentById(ctx, uint64(voteExt.IDs[i]))
-			if !found {
-				return nil, fmt.Errorf("failed to find task id: %v", voteExt.IDs[i])
-			}
-
-			if intent.Status == "verified" {
-				return nil, fmt.Errorf("intent is already verified: %v", voteExt.IDs[i])
-			}
-
-			txnDtls, err := FetchTxDetails(voteExt.TxHashs[i])
-			if err != nil {
-				return nil, fmt.Errorf("failed to fetch txn details: %w", err)
-			}
-
-			if txnDtls.To != "0x9ddB44C124E3e01D43ECEc91DD87B0BC9c4291FE" {
-				return nil, fmt.Errorf("failed to To address is wrong: %w", err)
-			}
-
-			//NOTE: we can verify data also for additional checks
-			// if txnDtls.Data != "0x" {
-			// 	return nil, fmt.Errorf("failed to fetch data: %w", err)
-			// }
-		}
-
-		afterEvent := time.Now()
-		f, err := os.OpenFile("/Users/himank/verifyVote.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open file: %w", err)
-		}
-		defer f.Close()
-		f.WriteString(fmt.Sprintf("Blocknumber %v, Time taken to fetch events: %v, no of events %v \n", req.Height, afterEvent.Sub(beforeEvent), len(voteExt.IDs)))
-		f.Sync()
-
-		defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2")
-
+		//Perform checks on events
+		
 		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}
 }

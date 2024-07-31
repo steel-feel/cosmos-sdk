@@ -14,7 +14,7 @@ func (k Keeper) SetIntent(ctx sdk.Context, intent types.Intent) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
 	b := k.cdc.MustMarshal(&intent)
-	store.Set(GetPostIDBytes(intent.Id), b)
+	store.Set([]byte(intent.Intentid), b)
 }
 
 func (k Keeper) AppendIntent(ctx sdk.Context, intent types.Intent) uint64 {
@@ -23,9 +23,10 @@ func (k Keeper) AppendIntent(ctx sdk.Context, intent types.Intent) uint64 {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
 	appendedValue := k.cdc.MustMarshal(&intent)
-	store.Set(GetPostIDBytes(intent.Id), appendedValue)
+	store.Set([]byte(intent.Intentid), appendedValue)
 	k.SetIntentCount(ctx, count+1)
 
+	//Emit the intent event, 
 	if err := ctx.EventManager().EmitTypedEvent(&types.IntentEvent{
 		Intentid: intent.Intentid,
 		Chainid: intent.ChainId,
@@ -46,10 +47,10 @@ func (k Keeper) SetIntentCount(ctx sdk.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-func (k Keeper) GetIntentById(ctx sdk.Context, id uint64) (val types.Intent, found bool) {
+func (k Keeper) GetIntentById(ctx sdk.Context, intentid string) (val types.Intent, found bool) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
-	b := store.Get(GetPostIDBytes(id))
+	b := store.Get([]byte(intentid))
 	if b == nil {
 		return val, false
 	}

@@ -23,17 +23,7 @@ var (
 )
 
 const (
-	opWeightMsgCreateCblock = "op_weight_msg_cblock"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateCblock int = 100
 
-	opWeightMsgUpdateCblock = "op_weight_msg_cblock"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgUpdateCblock int = 100
-
-	opWeightMsgDeleteCblock = "op_weight_msg_cblock"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgDeleteCblock int = 100
 
 	opWeightMsgCreateIntent = "op_weight_msg_create_intent"
 	// TODO: Determine the simulation weight value
@@ -66,29 +56,7 @@ func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgCreateCblock int
-	simState.AppParams.GetOrGenerate(opWeightMsgCreateCblock, &weightMsgCreateCblock, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateCblock = defaultWeightMsgCreateCblock
-		},
-	)
-
-
-	var weightMsgUpdateCblock int
-	simState.AppParams.GetOrGenerate(opWeightMsgUpdateCblock, &weightMsgUpdateCblock, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateCblock = defaultWeightMsgUpdateCblock
-		},
-	)
 	
-
-	var weightMsgDeleteCblock int
-	simState.AppParams.GetOrGenerate(opWeightMsgDeleteCblock, &weightMsgDeleteCblock, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeleteCblock = defaultWeightMsgDeleteCblock
-		},
-	)
-
 
 	var weightMsgCreateIntent int
 	simState.AppParams.GetOrGenerate(opWeightMsgCreateIntent, &weightMsgCreateIntent, nil,

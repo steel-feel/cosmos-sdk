@@ -883,8 +883,8 @@ func (x *fastReflection_QueryGetIntentRequest) Interface() protoreflect.ProtoMes
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryGetIntentRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Id != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Id)
+	if x.Id != "" {
+		value := protoreflect.ValueOfString(x.Id)
 		if !f(fd_QueryGetIntentRequest_id, value) {
 			return
 		}
@@ -905,7 +905,7 @@ func (x *fastReflection_QueryGetIntentRequest) Range(f func(protoreflect.FieldDe
 func (x *fastReflection_QueryGetIntentRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "xarchain.xarchain.QueryGetIntentRequest.id":
-		return x.Id != uint64(0)
+		return x.Id != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.QueryGetIntentRequest"))
@@ -923,7 +923,7 @@ func (x *fastReflection_QueryGetIntentRequest) Has(fd protoreflect.FieldDescript
 func (x *fastReflection_QueryGetIntentRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "xarchain.xarchain.QueryGetIntentRequest.id":
-		x.Id = uint64(0)
+		x.Id = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.QueryGetIntentRequest"))
@@ -942,7 +942,7 @@ func (x *fastReflection_QueryGetIntentRequest) Get(descriptor protoreflect.Field
 	switch descriptor.FullName() {
 	case "xarchain.xarchain.QueryGetIntentRequest.id":
 		value := x.Id
-		return protoreflect.ValueOfUint64(value)
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.QueryGetIntentRequest"))
@@ -964,7 +964,7 @@ func (x *fastReflection_QueryGetIntentRequest) Get(descriptor protoreflect.Field
 func (x *fastReflection_QueryGetIntentRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "xarchain.xarchain.QueryGetIntentRequest.id":
-		x.Id = value.Uint()
+		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.QueryGetIntentRequest"))
@@ -1001,7 +1001,7 @@ func (x *fastReflection_QueryGetIntentRequest) Mutable(fd protoreflect.FieldDesc
 func (x *fastReflection_QueryGetIntentRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "xarchain.xarchain.QueryGetIntentRequest.id":
-		return protoreflect.ValueOfUint64(uint64(0))
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: xarchain.xarchain.QueryGetIntentRequest"))
@@ -1071,8 +1071,9 @@ func (x *fastReflection_QueryGetIntentRequest) ProtoMethods() *protoiface.Method
 		var n int
 		var l int
 		_ = l
-		if x.Id != 0 {
-			n += 1 + runtime.Sov(uint64(x.Id))
+		l = len(x.Id)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -1103,10 +1104,12 @@ func (x *fastReflection_QueryGetIntentRequest) ProtoMethods() *protoiface.Method
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Id != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+		if len(x.Id) > 0 {
+			i -= len(x.Id)
+			copy(dAtA[i:], x.Id)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Id)))
 			i--
-			dAtA[i] = 0x8
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -1158,10 +1161,10 @@ func (x *fastReflection_QueryGetIntentRequest) ProtoMethods() *protoiface.Method
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 0 {
+				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 				}
-				x.Id = 0
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1171,11 +1174,24 @@ func (x *fastReflection_QueryGetIntentRequest) ProtoMethods() *protoiface.Method
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Id |= uint64(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Id = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2736,7 +2752,7 @@ type QueryGetIntentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *QueryGetIntentRequest) Reset() {
@@ -2759,11 +2775,11 @@ func (*QueryGetIntentRequest) Descriptor() ([]byte, []int) {
 	return file_xarchain_xarchain_query_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *QueryGetIntentRequest) GetId() uint64 {
+func (x *QueryGetIntentRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
 type QueryGetIntentResponse struct {
@@ -2905,7 +2921,7 @@ var file_xarchain_xarchain_query_proto_rawDesc = []byte{
 	0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
 	0x22, 0x27, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x74, 0x65,
 	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x22, 0x4b, 0x0a, 0x16, 0x51, 0x75, 0x65,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x4b, 0x0a, 0x16, 0x51, 0x75, 0x65,
 	0x72, 0x79, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x06, 0x69, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x78, 0x61, 0x72, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x2e, 0x78,

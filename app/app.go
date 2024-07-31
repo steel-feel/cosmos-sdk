@@ -1,6 +1,7 @@
 package app
 
 import (
+	"time"
 	"io"
 	"os"
 	"path/filepath"
@@ -287,6 +288,10 @@ func New(
 	voteExtHandler := xarchain_abci.NewCAExtHandler(
 		logger,
 		app.XarchainKeeper,
+		time.Second,
+		map[string]string{
+			"421614": "https://rpc.ankr.com/arbitrum_sepolia",
+		},
 	)
 
 	propHandler := xarchain_abci.NewProposalHandler(

@@ -18,11 +18,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Short:     "Shows the parameters of the module",
 				},
 
-				{
-					RpcMethod: "Cblock",
-					Use:       "show-cblock",
-					Short:     "show cblock",
-				},
+
 				{
 					RpcMethod:      "GetIntent",
 					Use:            "get-intent [id]",
@@ -48,23 +44,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "UpdateParams",
 					Skip:      true, // skipped because authority gated
 				},
-				{
-					RpcMethod:      "CreateCblock",
-					Use:            "create-cblock [blocknumber]",
-					Short:          "Create cblock",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "blocknumber"}},
-				},
-				{
-					RpcMethod:      "UpdateCblock",
-					Use:            "update-cblock [blocknumber]",
-					Short:          "Update cblock",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "blocknumber"}},
-				},
-				{
-					RpcMethod: "DeleteCblock",
-					Use:       "delete-cblock",
-					Short:     "Delete cblock",
-				},
+			
 				{
 					RpcMethod:      "CreateIntent",
 					Use:            "create-intent [from] [to] [data] [value] [chain-id]",
