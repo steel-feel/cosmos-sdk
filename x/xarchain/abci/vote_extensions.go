@@ -8,13 +8,10 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	abci "github.com/cometbft/cometbft/abci/types"
-	// "github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	// "os"
 	"time"
 	"xarchain/x/xarchain/keeper"
-	// "xarchain/x/xarchain/types"
+	
 )
 
 type VoteExtHandler struct {
@@ -130,8 +127,8 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			}
 	
 			if err := g.Wait(); err != nil {
-				// We failed to get some or all prices from providers. In the case that
-				// all prices fail, computeOraclePrices below will return an error.
+				// We failed to get some or all event from providers. In the case that
+				// all events fail, we will throw error.
 				h.logger.Error("failed to fetch events", "err", err)
 			}
 	
@@ -164,7 +161,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			return nil, fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
 		}
 
-		//Perform checks on events
+		//TODO: Perform checks on events
 		
 		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}
