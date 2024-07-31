@@ -14,10 +14,6 @@ import (
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
-
-		Cblock: &types.Cblock{
-			Blocknumber: 85,
-		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -29,6 +25,5 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.Equal(t, genesisState.Cblock, got.Cblock)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

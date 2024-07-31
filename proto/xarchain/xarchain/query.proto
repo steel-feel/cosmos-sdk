@@ -7,7 +7,6 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "xarchain/xarchain/params.proto";
-import "xarchain/xarchain/cblock.proto";
 import "xarchain/xarchain/intent.proto";
 
 option go_package = "xarchain/x/xarchain/types";
@@ -18,12 +17,6 @@ service Query {
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/xarchain/xarchain/params";
-  
-  }
-  
-  // Queries a Cblock by index.
-  rpc Cblock (QueryGetCblockRequest) returns (QueryGetCblockResponse) {
-    option (google.api.http).get = "/xarchain/xarchain/cblock";
   
   }
   
@@ -47,12 +40,6 @@ message QueryParamsResponse {
   
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-}
-
-message QueryGetCblockRequest {}
-
-message QueryGetCblockResponse {
-  Cblock Cblock = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryGetIntentRequest {

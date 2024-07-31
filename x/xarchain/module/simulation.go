@@ -72,10 +72,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgCreateCblock = defaultWeightMsgCreateCblock
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateCblock,
-		xarchainsimulation.SimulateMsgCreateCblock(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+
 
 	var weightMsgUpdateCblock int
 	simState.AppParams.GetOrGenerate(opWeightMsgUpdateCblock, &weightMsgUpdateCblock, nil,
@@ -83,10 +80,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgUpdateCblock = defaultWeightMsgUpdateCblock
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateCblock,
-		xarchainsimulation.SimulateMsgUpdateCblock(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+	
 
 	var weightMsgDeleteCblock int
 	simState.AppParams.GetOrGenerate(opWeightMsgDeleteCblock, &weightMsgDeleteCblock, nil,
@@ -94,10 +88,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgDeleteCblock = defaultWeightMsgDeleteCblock
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteCblock,
-		xarchainsimulation.SimulateMsgDeleteCblock(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+
 
 	var weightMsgCreateIntent int
 	simState.AppParams.GetOrGenerate(opWeightMsgCreateIntent, &weightMsgCreateIntent, nil,
@@ -129,30 +120,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return []simtypes.WeightedProposalMsg{
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgCreateCblock,
-			defaultWeightMsgCreateCblock,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				xarchainsimulation.SimulateMsgCreateCblock(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgUpdateCblock,
-			defaultWeightMsgUpdateCblock,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				xarchainsimulation.SimulateMsgUpdateCblock(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
-		simulation.NewWeightedProposalMsg(
-			opWeightMsgDeleteCblock,
-			defaultWeightMsgDeleteCblock,
-			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				xarchainsimulation.SimulateMsgDeleteCblock(am.accountKeeper, am.bankKeeper, am.keeper)
-				return nil
-			},
-		),
 		simulation.NewWeightedProposalMsg(
 			opWeightMsgCreateIntent,
 			defaultWeightMsgCreateIntent,

@@ -9,11 +9,6 @@ import (
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateCblock{},
-		&MsgUpdateCblock{},
-		&MsgDeleteCblock{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateIntent{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),

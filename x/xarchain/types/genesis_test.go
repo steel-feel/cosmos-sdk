@@ -22,10 +22,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
-				Cblock: &types.Cblock{
-					Blocknumber: 80,
-				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,

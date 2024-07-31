@@ -114,86 +114,6 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-type QueryGetCblockRequest struct {
-}
-
-func (m *QueryGetCblockRequest) Reset()         { *m = QueryGetCblockRequest{} }
-func (m *QueryGetCblockRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetCblockRequest) ProtoMessage()    {}
-func (*QueryGetCblockRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e81fa4db5eb7c864, []int{2}
-}
-func (m *QueryGetCblockRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetCblockRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetCblockRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetCblockRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetCblockRequest.Merge(m, src)
-}
-func (m *QueryGetCblockRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetCblockRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetCblockRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetCblockRequest proto.InternalMessageInfo
-
-type QueryGetCblockResponse struct {
-	Cblock Cblock `protobuf:"bytes,1,opt,name=Cblock,proto3" json:"Cblock"`
-}
-
-func (m *QueryGetCblockResponse) Reset()         { *m = QueryGetCblockResponse{} }
-func (m *QueryGetCblockResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetCblockResponse) ProtoMessage()    {}
-func (*QueryGetCblockResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e81fa4db5eb7c864, []int{3}
-}
-func (m *QueryGetCblockResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryGetCblockResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryGetCblockResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryGetCblockResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetCblockResponse.Merge(m, src)
-}
-func (m *QueryGetCblockResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryGetCblockResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetCblockResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryGetCblockResponse proto.InternalMessageInfo
-
-func (m *QueryGetCblockResponse) GetCblock() Cblock {
-	if m != nil {
-		return m.Cblock
-	}
-	return Cblock{}
-}
-
 type QueryGetIntentRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
@@ -202,7 +122,7 @@ func (m *QueryGetIntentRequest) Reset()         { *m = QueryGetIntentRequest{} }
 func (m *QueryGetIntentRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetIntentRequest) ProtoMessage()    {}
 func (*QueryGetIntentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e81fa4db5eb7c864, []int{4}
+	return fileDescriptor_e81fa4db5eb7c864, []int{2}
 }
 func (m *QueryGetIntentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -246,7 +166,7 @@ func (m *QueryGetIntentResponse) Reset()         { *m = QueryGetIntentResponse{}
 func (m *QueryGetIntentResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetIntentResponse) ProtoMessage()    {}
 func (*QueryGetIntentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e81fa4db5eb7c864, []int{5}
+	return fileDescriptor_e81fa4db5eb7c864, []int{3}
 }
 func (m *QueryGetIntentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -290,7 +210,7 @@ func (m *QueryListIntentRequest) Reset()         { *m = QueryListIntentRequest{}
 func (m *QueryListIntentRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryListIntentRequest) ProtoMessage()    {}
 func (*QueryListIntentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e81fa4db5eb7c864, []int{6}
+	return fileDescriptor_e81fa4db5eb7c864, []int{4}
 }
 func (m *QueryListIntentRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -335,7 +255,7 @@ func (m *QueryListIntentResponse) Reset()         { *m = QueryListIntentResponse
 func (m *QueryListIntentResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryListIntentResponse) ProtoMessage()    {}
 func (*QueryListIntentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e81fa4db5eb7c864, []int{7}
+	return fileDescriptor_e81fa4db5eb7c864, []int{5}
 }
 func (m *QueryListIntentResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -381,8 +301,6 @@ func (m *QueryListIntentResponse) GetPagination() *query.PageResponse {
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "xarchain.xarchain.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "xarchain.xarchain.QueryParamsResponse")
-	proto.RegisterType((*QueryGetCblockRequest)(nil), "xarchain.xarchain.QueryGetCblockRequest")
-	proto.RegisterType((*QueryGetCblockResponse)(nil), "xarchain.xarchain.QueryGetCblockResponse")
 	proto.RegisterType((*QueryGetIntentRequest)(nil), "xarchain.xarchain.QueryGetIntentRequest")
 	proto.RegisterType((*QueryGetIntentResponse)(nil), "xarchain.xarchain.QueryGetIntentResponse")
 	proto.RegisterType((*QueryListIntentRequest)(nil), "xarchain.xarchain.QueryListIntentRequest")
@@ -392,42 +310,39 @@ func init() {
 func init() { proto.RegisterFile("xarchain/xarchain/query.proto", fileDescriptor_e81fa4db5eb7c864) }
 
 var fileDescriptor_e81fa4db5eb7c864 = []byte{
-	// 550 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x94, 0x31, 0x6f, 0x13, 0x3f,
-	0x18, 0xc6, 0xe3, 0xfc, 0xf3, 0x3f, 0xa9, 0x46, 0x42, 0xaa, 0x29, 0x94, 0x1c, 0x70, 0x14, 0x0b,
-	0xd2, 0x92, 0xe1, 0xac, 0xb4, 0x03, 0x0b, 0x53, 0x90, 0xa8, 0x10, 0x0c, 0xed, 0xb1, 0xb1, 0x80,
-	0x93, 0x58, 0x87, 0x45, 0x62, 0x5f, 0x63, 0x17, 0x51, 0x10, 0x12, 0x62, 0x85, 0x01, 0x89, 0x91,
-	0x91, 0x85, 0x91, 0x8f, 0xd1, 0xb1, 0x12, 0x0b, 0x13, 0x42, 0x09, 0x12, 0x5f, 0x03, 0xc5, 0xf6,
-	0xe5, 0x9a, 0x5c, 0xee, 0x9a, 0x25, 0xb2, 0xfc, 0x3e, 0xef, 0xfb, 0xfc, 0x62, 0x3f, 0x3e, 0x78,
-	0xed, 0x15, 0x1d, 0x76, 0x9f, 0x53, 0x2e, 0xc8, 0x74, 0x71, 0x70, 0xc8, 0x86, 0x47, 0x61, 0x32,
-	0x94, 0x5a, 0xa2, 0xd5, 0x74, 0x37, 0x4c, 0x17, 0xfe, 0x2a, 0x1d, 0x70, 0x21, 0x89, 0xf9, 0xb5,
-	0x2a, 0x7f, 0x2d, 0x96, 0xb1, 0x34, 0x4b, 0x32, 0x59, 0xb9, 0xdd, 0xab, 0xb1, 0x94, 0x71, 0x9f,
-	0x11, 0x9a, 0x70, 0x42, 0x85, 0x90, 0x9a, 0x6a, 0x2e, 0x85, 0x72, 0xd5, 0x66, 0x57, 0xaa, 0x81,
-	0x54, 0xa4, 0x43, 0x15, 0xb3, 0x96, 0xe4, 0x65, 0xab, 0xc3, 0x34, 0x6d, 0x91, 0x84, 0xc6, 0x5c,
-	0x18, 0xb1, 0xd3, 0x06, 0x79, 0xc8, 0x84, 0x0e, 0xe9, 0x40, 0x15, 0xd7, 0xbb, 0x9d, 0xbe, 0xec,
-	0xbe, 0x28, 0xae, 0x73, 0xa1, 0x99, 0xd0, 0xb6, 0x8e, 0xd7, 0x20, 0xda, 0x9f, 0x10, 0xec, 0x99,
-	0xa1, 0x11, 0x3b, 0x38, 0x64, 0x4a, 0xe3, 0xc7, 0xf0, 0xc2, 0xcc, 0xae, 0x4a, 0xa4, 0x50, 0x0c,
-	0xdd, 0x85, 0x9e, 0x35, 0xbf, 0x0c, 0x36, 0xc0, 0xd6, 0xb9, 0xed, 0x7a, 0x98, 0x3b, 0xa3, 0xd0,
-	0xb6, 0xb4, 0x57, 0x8e, 0x7f, 0x5d, 0xaf, 0x7c, 0xfb, 0xfb, 0xbd, 0x09, 0x22, 0xd7, 0x83, 0xd7,
-	0xe1, 0x45, 0x33, 0x74, 0x97, 0xe9, 0x7b, 0x06, 0x31, 0x75, 0xdb, 0x87, 0x97, 0xe6, 0x0b, 0xce,
-	0xf0, 0x0e, 0xf4, 0xec, 0x4e, 0x89, 0xa1, 0x15, 0xb4, 0x6b, 0x13, 0xc3, 0xc8, 0xc9, 0xf1, 0x66,
-	0xe6, 0xf5, 0xc0, 0xfc, 0x5d, 0xe7, 0x85, 0xce, 0xc3, 0x2a, 0xef, 0x99, 0x69, 0xb5, 0xa8, 0xca,
-	0x7b, 0xf8, 0x61, 0xe6, 0x9d, 0x0a, 0x9d, 0x77, 0x0b, 0x7a, 0xf6, 0xa4, 0x4a, 0xbc, 0x5d, 0x8b,
-	0x13, 0xe2, 0x67, 0x6e, 0xd8, 0x23, 0xae, 0xe6, 0x6c, 0xef, 0x43, 0x98, 0x5d, 0xad, 0x1b, 0xd8,
-	0x08, 0x6d, 0x0e, 0xc2, 0x49, 0x0e, 0x42, 0x1b, 0x3d, 0x97, 0x83, 0x70, 0x8f, 0xc6, 0xcc, 0xf5,
-	0x46, 0xa7, 0x3a, 0xf1, 0x17, 0x00, 0xd7, 0x73, 0x16, 0xd9, 0x61, 0x4d, 0x81, 0xff, 0x2b, 0x05,
-	0x4e, 0x0f, 0xcb, 0xca, 0xd1, 0xee, 0x0c, 0x5c, 0xd5, 0xc0, 0x6d, 0x9e, 0x09, 0x67, 0x5d, 0x4f,
-	0xd3, 0x6d, 0x7f, 0xad, 0xc1, 0xff, 0x0d, 0x1d, 0x7a, 0x0d, 0x3d, 0x1b, 0x04, 0x74, 0x6b, 0x01,
-	0x45, 0x3e, 0x71, 0x7e, 0xe3, 0x2c, 0x99, 0xb5, 0xc3, 0x37, 0xde, 0xff, 0xf8, 0xf3, 0xb9, 0x7a,
-	0x05, 0xd5, 0x49, 0xd1, 0xc3, 0x40, 0xef, 0x40, 0x9a, 0x1a, 0xb4, 0x55, 0x34, 0x75, 0x3e, 0x83,
-	0xfe, 0xed, 0x25, 0x94, 0x4b, 0x20, 0xd8, 0xb7, 0x87, 0x3e, 0x02, 0xb8, 0x32, 0x4d, 0x54, 0x29,
-	0xc5, 0x4c, 0x4c, 0x4a, 0x29, 0x66, 0x6f, 0x1b, 0x37, 0x0d, 0xc5, 0x4d, 0x84, 0x17, 0x50, 0xc4,
-	0x4c, 0x3f, 0xb5, 0x77, 0x4b, 0xde, 0xf0, 0xde, 0x5b, 0xf4, 0x01, 0x40, 0x98, 0x05, 0x06, 0x15,
-	0xba, 0xe4, 0x72, 0xeb, 0x37, 0x97, 0x91, 0x3a, 0xa2, 0x86, 0x21, 0xda, 0x40, 0xc1, 0x02, 0xa2,
-	0x3e, 0x57, 0x29, 0x52, 0x7b, 0xe7, 0x78, 0x14, 0x80, 0x93, 0x51, 0x00, 0x7e, 0x8f, 0x02, 0xf0,
-	0x69, 0x1c, 0x54, 0x4e, 0xc6, 0x41, 0xe5, 0xe7, 0x38, 0xa8, 0x3c, 0xa9, 0x67, 0x8d, 0x59, 0xab,
-	0x3e, 0x4a, 0x98, 0xea, 0x78, 0xe6, 0x73, 0xb5, 0xf3, 0x2f, 0x00, 0x00, 0xff, 0xff, 0x61, 0x50,
-	0x25, 0x75, 0xb5, 0x05, 0x00, 0x00,
+	// 497 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0x3f, 0x6f, 0x53, 0x31,
+	0x14, 0xc5, 0xe3, 0xb4, 0x44, 0xea, 0x45, 0x42, 0xaa, 0x29, 0x7f, 0xf2, 0x00, 0x53, 0x2c, 0x48,
+	0x4b, 0x06, 0x5b, 0x69, 0x07, 0x16, 0xa6, 0x0c, 0x54, 0x08, 0x86, 0x12, 0x36, 0x16, 0x70, 0x1a,
+	0xeb, 0x61, 0xa9, 0xb1, 0x5f, 0x63, 0x17, 0x51, 0x10, 0x0b, 0x2b, 0x0c, 0x48, 0x8c, 0x2c, 0x8c,
+	0x8c, 0x7c, 0x8c, 0x8e, 0x95, 0x58, 0x98, 0x10, 0x4a, 0x90, 0xf8, 0x1a, 0x55, 0x6c, 0xa7, 0x49,
+	0xf3, 0xf2, 0xda, 0x2c, 0x4f, 0x96, 0x7d, 0xce, 0x3d, 0x3f, 0xdd, 0x7b, 0x1f, 0xdc, 0x7a, 0x2b,
+	0x7a, 0x3b, 0xaf, 0x85, 0xd2, 0xfc, 0xe4, 0xb0, 0xb7, 0x2f, 0x7b, 0x07, 0x2c, 0xeb, 0x19, 0x67,
+	0xf0, 0xf2, 0xe8, 0x96, 0x8d, 0x0e, 0xc9, 0xb2, 0xe8, 0x2a, 0x6d, 0xb8, 0xff, 0x06, 0x55, 0xb2,
+	0x92, 0x9a, 0xd4, 0xf8, 0x23, 0x1f, 0x9e, 0xe2, 0xed, 0xcd, 0xd4, 0x98, 0x74, 0x57, 0x72, 0x91,
+	0x29, 0x2e, 0xb4, 0x36, 0x4e, 0x38, 0x65, 0xb4, 0x8d, 0xaf, 0xf5, 0x1d, 0x63, 0xbb, 0xc6, 0xf2,
+	0xb6, 0xb0, 0x32, 0x44, 0xf2, 0x37, 0x8d, 0xb6, 0x74, 0xa2, 0xc1, 0x33, 0x91, 0x2a, 0xed, 0xc5,
+	0x51, 0x4b, 0xf2, 0x90, 0x99, 0xe8, 0x89, 0xae, 0x2d, 0x7e, 0x57, 0xda, 0x49, 0xed, 0xc2, 0x3b,
+	0x5d, 0x01, 0xfc, 0x6c, 0x98, 0xb0, 0xed, 0x4d, 0x2d, 0xb9, 0xb7, 0x2f, 0xad, 0xa3, 0xcf, 0xe1,
+	0xf2, 0xa9, 0x5b, 0x9b, 0x19, 0x6d, 0x25, 0x7e, 0x08, 0x95, 0x50, 0xfc, 0x3a, 0x5a, 0x45, 0xeb,
+	0x17, 0x37, 0xaa, 0x2c, 0xd7, 0x03, 0x16, 0x2c, 0xcd, 0xa5, 0xc3, 0x3f, 0xb7, 0x4b, 0x3f, 0xfe,
+	0xff, 0xac, 0xa3, 0x56, 0xf4, 0xd0, 0x35, 0xb8, 0xe2, 0x8b, 0x6e, 0x49, 0xf7, 0xd8, 0x23, 0xc4,
+	0x34, 0x7c, 0x09, 0xca, 0xaa, 0xe3, 0x4b, 0x2e, 0xb6, 0xca, 0xaa, 0x43, 0x9f, 0xc0, 0xd5, 0x69,
+	0x61, 0x04, 0x68, 0x40, 0x25, 0xd0, 0x9f, 0x01, 0x10, 0x2d, 0x51, 0x48, 0x5f, 0xc5, 0x62, 0x4f,
+	0x95, 0x9d, 0x8a, 0x7d, 0x04, 0x30, 0x6e, 0x67, 0x2c, 0x58, 0x63, 0xa1, 0xf7, 0x6c, 0xd8, 0x7b,
+	0x16, 0xc6, 0x1d, 0x7b, 0xcf, 0xb6, 0x45, 0x2a, 0xa3, 0xb7, 0x35, 0xe1, 0xa4, 0xdf, 0x10, 0x5c,
+	0xcb, 0x45, 0x44, 0xe0, 0x07, 0x13, 0xc0, 0x0b, 0x67, 0x02, 0x37, 0x17, 0x87, 0x1d, 0x1b, 0x61,
+	0xe3, 0xad, 0x53, 0x70, 0x65, 0x0f, 0xb7, 0x76, 0x2e, 0x5c, 0x48, 0x9d, 0xa4, 0xdb, 0xf8, 0xbe,
+	0x00, 0x17, 0x3c, 0x1d, 0x7e, 0x07, 0x95, 0x30, 0x1c, 0x7c, 0x6f, 0x06, 0x45, 0x7e, 0x0b, 0x92,
+	0xda, 0x79, 0xb2, 0x10, 0x47, 0xef, 0x7c, 0xfc, 0xf5, 0xef, 0x6b, 0xf9, 0x06, 0xae, 0xf2, 0xa2,
+	0x65, 0xc4, 0x9f, 0x11, 0x2c, 0x9d, 0x8c, 0x13, 0xaf, 0x17, 0x15, 0x9e, 0x5e, 0x8d, 0xe4, 0xfe,
+	0x1c, 0xca, 0x48, 0x51, 0xf7, 0x14, 0x77, 0x31, 0x9d, 0x41, 0x91, 0x4a, 0xf7, 0x32, 0x34, 0x96,
+	0xbf, 0x57, 0x9d, 0x0f, 0xf8, 0x13, 0x02, 0x18, 0x4f, 0x0b, 0x17, 0xa6, 0xe4, 0x96, 0x26, 0xa9,
+	0xcf, 0x23, 0x8d, 0x44, 0x35, 0x4f, 0xb4, 0x8a, 0xc9, 0x0c, 0xa2, 0x5d, 0x65, 0x47, 0x48, 0xcd,
+	0xcd, 0xc3, 0x3e, 0x41, 0x47, 0x7d, 0x82, 0xfe, 0xf6, 0x09, 0xfa, 0x32, 0x20, 0xa5, 0xa3, 0x01,
+	0x29, 0xfd, 0x1e, 0x90, 0xd2, 0x8b, 0xea, 0xd8, 0x38, 0xb6, 0xba, 0x83, 0x4c, 0xda, 0x76, 0xc5,
+	0xff, 0xbf, 0x9b, 0xc7, 0x01, 0x00, 0x00, 0xff, 0xff, 0x83, 0x4f, 0x95, 0x63, 0xa6, 0x04, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -444,8 +359,6 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Queries a Cblock by index.
-	Cblock(ctx context.Context, in *QueryGetCblockRequest, opts ...grpc.CallOption) (*QueryGetCblockResponse, error)
 	// Queries a list of GetIntent items.
 	GetIntent(ctx context.Context, in *QueryGetIntentRequest, opts ...grpc.CallOption) (*QueryGetIntentResponse, error)
 	// Queries a list of ListIntent items.
@@ -463,15 +376,6 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
 	out := new(QueryParamsResponse)
 	err := c.cc.Invoke(ctx, "/xarchain.xarchain.Query/Params", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) Cblock(ctx context.Context, in *QueryGetCblockRequest, opts ...grpc.CallOption) (*QueryGetCblockResponse, error) {
-	out := new(QueryGetCblockResponse)
-	err := c.cc.Invoke(ctx, "/xarchain.xarchain.Query/Cblock", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -500,8 +404,6 @@ func (c *queryClient) ListIntent(ctx context.Context, in *QueryListIntentRequest
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Queries a Cblock by index.
-	Cblock(context.Context, *QueryGetCblockRequest) (*QueryGetCblockResponse, error)
 	// Queries a list of GetIntent items.
 	GetIntent(context.Context, *QueryGetIntentRequest) (*QueryGetIntentResponse, error)
 	// Queries a list of ListIntent items.
@@ -514,9 +416,6 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
-}
-func (*UnimplementedQueryServer) Cblock(ctx context.Context, req *QueryGetCblockRequest) (*QueryGetCblockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Cblock not implemented")
 }
 func (*UnimplementedQueryServer) GetIntent(ctx context.Context, req *QueryGetIntentRequest) (*QueryGetIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIntent not implemented")
@@ -543,24 +442,6 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_Cblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetCblockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Cblock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/xarchain.xarchain.Query/Cblock",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Cblock(ctx, req.(*QueryGetCblockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -608,10 +489,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
-		},
-		{
-			MethodName: "Cblock",
-			Handler:    _Query_Cblock_Handler,
 		},
 		{
 			MethodName: "GetIntent",
@@ -671,62 +548,6 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = l
 	{
 		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetCblockRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetCblockRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetCblockRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetCblockResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetCblockResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetCblockResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Cblock.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -916,26 +737,6 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetCblockRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryGetCblockResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Cblock.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
 func (m *QueryGetIntentRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1108,139 +909,6 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetCblockRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetCblockRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetCblockRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetCblockResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetCblockResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetCblockResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Cblock", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Cblock.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -20,9 +20,6 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Msg_UpdateParams_FullMethodName = "/xarchain.xarchain.Msg/UpdateParams"
-	Msg_CreateCblock_FullMethodName = "/xarchain.xarchain.Msg/CreateCblock"
-	Msg_UpdateCblock_FullMethodName = "/xarchain.xarchain.Msg/UpdateCblock"
-	Msg_DeleteCblock_FullMethodName = "/xarchain.xarchain.Msg/DeleteCblock"
 	Msg_CreateIntent_FullMethodName = "/xarchain.xarchain.Msg/CreateIntent"
 	Msg_UpdateIntent_FullMethodName = "/xarchain.xarchain.Msg/UpdateIntent"
 )
@@ -34,9 +31,6 @@ type MsgClient interface {
 	// UpdateParams defines a (governance) operation for updating the module
 	// parameters. The authority defaults to the x/gov module account.
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
-	CreateCblock(ctx context.Context, in *MsgCreateCblock, opts ...grpc.CallOption) (*MsgCreateCblockResponse, error)
-	UpdateCblock(ctx context.Context, in *MsgUpdateCblock, opts ...grpc.CallOption) (*MsgUpdateCblockResponse, error)
-	DeleteCblock(ctx context.Context, in *MsgDeleteCblock, opts ...grpc.CallOption) (*MsgDeleteCblockResponse, error)
 	CreateIntent(ctx context.Context, in *MsgCreateIntent, opts ...grpc.CallOption) (*MsgCreateIntentResponse, error)
 	UpdateIntent(ctx context.Context, in *MsgUpdateIntent, opts ...grpc.CallOption) (*MsgUpdateIntentResponse, error)
 }
@@ -52,33 +46,6 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
 	out := new(MsgUpdateParamsResponse)
 	err := c.cc.Invoke(ctx, Msg_UpdateParams_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) CreateCblock(ctx context.Context, in *MsgCreateCblock, opts ...grpc.CallOption) (*MsgCreateCblockResponse, error) {
-	out := new(MsgCreateCblockResponse)
-	err := c.cc.Invoke(ctx, Msg_CreateCblock_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) UpdateCblock(ctx context.Context, in *MsgUpdateCblock, opts ...grpc.CallOption) (*MsgUpdateCblockResponse, error) {
-	out := new(MsgUpdateCblockResponse)
-	err := c.cc.Invoke(ctx, Msg_UpdateCblock_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) DeleteCblock(ctx context.Context, in *MsgDeleteCblock, opts ...grpc.CallOption) (*MsgDeleteCblockResponse, error) {
-	out := new(MsgDeleteCblockResponse)
-	err := c.cc.Invoke(ctx, Msg_DeleteCblock_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,9 +77,6 @@ type MsgServer interface {
 	// UpdateParams defines a (governance) operation for updating the module
 	// parameters. The authority defaults to the x/gov module account.
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
-	CreateCblock(context.Context, *MsgCreateCblock) (*MsgCreateCblockResponse, error)
-	UpdateCblock(context.Context, *MsgUpdateCblock) (*MsgUpdateCblockResponse, error)
-	DeleteCblock(context.Context, *MsgDeleteCblock) (*MsgDeleteCblockResponse, error)
 	CreateIntent(context.Context, *MsgCreateIntent) (*MsgCreateIntentResponse, error)
 	UpdateIntent(context.Context, *MsgUpdateIntent) (*MsgUpdateIntentResponse, error)
 	mustEmbedUnimplementedMsgServer()
@@ -124,15 +88,6 @@ type UnimplementedMsgServer struct {
 
 func (UnimplementedMsgServer) UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
-}
-func (UnimplementedMsgServer) CreateCblock(context.Context, *MsgCreateCblock) (*MsgCreateCblockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCblock not implemented")
-}
-func (UnimplementedMsgServer) UpdateCblock(context.Context, *MsgUpdateCblock) (*MsgUpdateCblockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateCblock not implemented")
-}
-func (UnimplementedMsgServer) DeleteCblock(context.Context, *MsgDeleteCblock) (*MsgDeleteCblockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteCblock not implemented")
 }
 func (UnimplementedMsgServer) CreateIntent(context.Context, *MsgCreateIntent) (*MsgCreateIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIntent not implemented")
@@ -167,60 +122,6 @@ func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_CreateCblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateCblock)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CreateCblock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_CreateCblock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateCblock(ctx, req.(*MsgCreateCblock))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_UpdateCblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateCblock)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).UpdateCblock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_UpdateCblock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateCblock(ctx, req.(*MsgUpdateCblock))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_DeleteCblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDeleteCblock)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).DeleteCblock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_DeleteCblock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DeleteCblock(ctx, req.(*MsgDeleteCblock))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -271,18 +172,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateParams",
 			Handler:    _Msg_UpdateParams_Handler,
-		},
-		{
-			MethodName: "CreateCblock",
-			Handler:    _Msg_CreateCblock_Handler,
-		},
-		{
-			MethodName: "UpdateCblock",
-			Handler:    _Msg_UpdateCblock_Handler,
-		},
-		{
-			MethodName: "DeleteCblock",
-			Handler:    _Msg_DeleteCblock_Handler,
 		},
 		{
 			MethodName: "CreateIntent",

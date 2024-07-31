@@ -1,9 +1,0 @@
-syntax = "proto3";
-package xarchain.xarchain;
-
-option go_package = "xarchain/x/xarchain/types";
-
-message Cblock {
-  int64 blocknumber = 1; 
-  string creator = 2; 
-  }
