@@ -7,11 +7,13 @@ import (
 	"cosmossdk.io/log"
 	"golang.org/x/sync/errgroup"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
 	"xarchain/x/xarchain/keeper"
-	
+	"xarchain/x/xarchain/types"
+
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/cosmos-sdk/telemetry"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type VoteExtHandler struct {
@@ -73,7 +75,7 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					}
 				}
 			} 
-
+			beforeFor := time.Now()
 			for chainId, provider := range h.providers {
 				
 				// Launch a goroutine to fetch events from provider.
@@ -125,7 +127,12 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					return nil
 				})
 			}
-	
+			afterFor := time.Now()
+			telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai" )
+			defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
+
+			h.logger.Error("failed to fetch events", "beforeFor", beforeFor, "afterFor", afterFor)
+
 			if err := g.Wait(); err != nil {
 				// We failed to get some or all event from providers. In the case that
 				// all events fail, we will throw error.
@@ -161,7 +168,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 			return nil, fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
 		}
 
-		//TODO: Perform checks on events
+		//TODO: Perform checks on events using go routines
 		
 		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}

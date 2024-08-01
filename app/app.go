@@ -291,6 +291,7 @@ func New(
 		time.Second,
 		map[string]string{
 			"421614": "https://rpc.ankr.com/arbitrum_sepolia",
+			"11155420" : "https://optimism-sepolia.blockpi.network/v1/rpc/public",
 		},
 	)
 
