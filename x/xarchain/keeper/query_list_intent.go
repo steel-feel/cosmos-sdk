@@ -21,6 +21,7 @@ func (k Keeper) ListIntent(ctx context.Context, req *types.QueryListIntentReques
 	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.IntentKey))
 
 	var intents []types.Intent
+	
 	pageRes, err := query.Paginate(store, req.Pagination, func(key []byte, value []byte) error {
 		var intent types.Intent
 		if err := k.cdc.Unmarshal(value, &intent); err != nil {

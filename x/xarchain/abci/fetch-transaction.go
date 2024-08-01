@@ -23,7 +23,7 @@ type TxnDetails struct {
 }
 
 type Provider struct {
-	client          ethclient.Client
+	rpcUrl          string
 	contractAddress string
 }
 
@@ -31,16 +31,10 @@ func NewProvider(supportedProviders map[string]string) map[string]Provider {
 	providers := make(map[string]Provider)
 	for chainID, rpcURL := range supportedProviders {
 		// Supporting only Arbitrum Sepolia, OP Sepolia and Ethereum Sepolia
-		if chainID == "421614" || chainID == "11155111" || chainID == "11155420" {
-			client, err := ethclient.Dial(rpcURL)
-			if err != nil {
-				log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-			}
-
 			switch chainID {
 			case "421614":
-				providers[chainID] = Provider{
-					client:          *client,
+				providers["421614"] = Provider{
+					rpcUrl:          rpcURL,
 					contractAddress: "0xF5620427CB929BAdd689f92D1AE52704dD019BDA",
 				}
 
@@ -48,12 +42,11 @@ func NewProvider(supportedProviders map[string]string) map[string]Provider {
 			
 
 			case "11155420":
-				providers[chainID] = Provider{
-					client:          *client,
+				providers["11155420"] = Provider{
+					rpcUrl:          rpcURL,
 					contractAddress: "0x2884bD2cf67b933CBb5199093Cea052d7A79198A",
 				}
 			}
-		}
 
 	}
 	return providers
@@ -63,15 +56,21 @@ func NewProvider(supportedProviders map[string]string) map[string]Provider {
 func (p *Provider) FetchEvents(prevFrom int64, prevTo int64) (EventsResp, error) {
 	var evtResponse EventsResp
 	// Get the current block number
-	currentBlock, err := p.client.BlockNumber(context.Background())
+	client, err := ethclient.Dial(p.rpcUrl)
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+	currentBlock, err := client.BlockNumber(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to get the block number: %v", err)
 		return evtResponse, err
 
 	}
 
+	
 	iCurrentBlock := int64(currentBlock)
-
+	log.Default().Printf("block number: %v", iCurrentBlock)
+	
 	if prevTo == iCurrentBlock {
 		return evtResponse, nil
 	}
@@ -103,7 +102,7 @@ func (p *Provider) FetchEvents(prevFrom int64, prevTo int64) (EventsResp, error)
 		},
 	}
 
-	logs, err := p.client.FilterLogs(context.Background(), query)
+	logs, err := client.FilterLogs(context.Background(), query)
 	if err != nil {
 		log.Fatalf("Failed to retrieve logs: %v, From: %v, To: %v  ", err, From, To)
 		return evtResponse, err

@@ -77,7 +77,12 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			} 
 			beforeFor := time.Now()
 			for chainId, provider := range h.providers {
-				
+				chainId := chainId
+				provider := provider
+
+				pFromBlock := injectedVoteExtTx.IntentData[chainId].From
+				pToBlock := injectedVoteExtTx.IntentData[chainId].To
+				// priceProvider := h.providers[providerName]
 				// Launch a goroutine to fetch events from provider.
 				// Recall, vote extensions are not required to be deterministic.
 				g.Go(func() error {
@@ -93,12 +98,11 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	
 					go func() {
 						
-						tData, err1 := provider.FetchEvents(injectedVoteExtTx.IntentData[chainId].From, injectedVoteExtTx.IntentData[chainId].To)
+						tData, err1 := provider.FetchEvents(pFromBlock, pToBlock)
 						if err1 != nil {
 							h.logger.Error("failed to fetch events from chain provider", "chainId", chainId, "err", err)
 							errCh <- err
 						}
-						h.logger.Debug("Fetched events from chain provider", "chainId", chainId, "events", tData)
 
 						intents[chainId] = tData
 
@@ -127,18 +131,22 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					return nil
 				})
 			}
-			afterFor := time.Now()
+			
 			telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai" )
 			defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
 
-			h.logger.Warn("Fetched events", "Timings:", afterFor.Sub(beforeFor), "EventData", providerAgg.providerEvents )
 
 			if err := g.Wait(); err != nil {
 				// We failed to get some or all event from providers. In the case that
 				// all events fail, we will throw error.
 				h.logger.Error("failed to fetch events", "err", err)
 			}
-	
+			afterFor := time.Now()
+			h.logger.Warn("Fetched events", "Timings:", afterFor.Sub(beforeFor),
+			 "Arb Sepolia Blocks", providerAgg.providerEvents["421614"],
+			 "OP Sepolia Blocks ", providerAgg.providerEvents["11155420"],
+			 )
+
 			// produce a canonical vote extension
 			voteExt := CAVoteExtension{
 				Height: req.Height,

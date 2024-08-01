@@ -19,6 +19,7 @@ func (k msgServer) CreateIntent(goCtx context.Context, msg *types.MsgCreateInten
 		Data:    msg.Data,
 		Status:  "proposed",
 		ChainId: msg.ChainId,
+		Intentid: msg.Intentid,
 	}
 
 	id := k.AppendIntent(ctx, intent)
