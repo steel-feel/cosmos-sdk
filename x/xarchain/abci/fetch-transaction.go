@@ -45,9 +45,13 @@ func NewProvider(supportedProviders map[string]string) map[string]Provider {
 				}
 
 			case "11155111":
+			
 
 			case "11155420":
-
+				providers[chainID] = Provider{
+					client:          *client,
+					contractAddress: "0x2884bD2cf67b933CBb5199093Cea052d7A79198A",
+				}
 			}
 		}
 
