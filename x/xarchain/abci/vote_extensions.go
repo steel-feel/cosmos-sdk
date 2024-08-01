@@ -131,7 +131,7 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai" )
 			defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "xarchai2" )
 
-			h.logger.Error("failed to fetch events", "beforeFor", beforeFor, "afterFor", afterFor)
+			h.logger.Warn("Fetched events", "Timings:", afterFor.Sub(beforeFor) )
 
 			if err := g.Wait(); err != nil {
 				// We failed to get some or all event from providers. In the case that
