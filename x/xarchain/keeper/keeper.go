@@ -21,6 +21,12 @@ type (
 		// should be the x/gov module account.
 		authority string
 	}
+
+	ChainData struct {
+		From uint64
+		To   uint64
+		IDs  []string
+	}
 )
 
 func NewKeeper(

@@ -7,6 +7,7 @@ import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "xarchain/xarchain/params.proto";
+import "xarchain/xarchain/syncblock.proto";
 
 option go_package = "xarchain/x/xarchain/types";
 
@@ -16,9 +17,12 @@ service Msg {
   
   // UpdateParams defines a (governance) operation for updating the module
   // parameters. The authority defaults to the x/gov module account.
-  rpc UpdateParams (MsgUpdateParams) returns (MsgUpdateParamsResponse);
-  rpc CreateIntent (MsgCreateIntent) returns (MsgCreateIntentResponse);
-  rpc UpdateIntent (MsgUpdateIntent) returns (MsgUpdateIntentResponse);
+  rpc UpdateParams    (MsgUpdateParams   ) returns (MsgUpdateParamsResponse   );
+  rpc CreateIntent    (MsgCreateIntent   ) returns (MsgCreateIntentResponse   );
+  rpc UpdateIntent    (MsgUpdateIntent   ) returns (MsgUpdateIntentResponse   );
+  rpc CreateSyncblock (MsgCreateSyncblock) returns (MsgCreateSyncblockResponse);
+  rpc UpdateSyncblock (MsgUpdateSyncblock) returns (MsgUpdateSyncblockResponse);
+  rpc DeleteSyncblock (MsgDeleteSyncblock) returns (MsgDeleteSyncblockResponse);
 }
 // MsgUpdateParams is the Msg/UpdateParams request type.
 message MsgUpdateParams {
@@ -40,12 +44,12 @@ message MsgUpdateParamsResponse {}
 
 message MsgCreateIntent {
   option (cosmos.msg.v1.signer) = "creator";
-  string creator = 1;
-  string from    = 2;
-  string to      = 3;
-  string data    = 4;
-  string value   = 5;
-  string chainId = 6;
+  string creator  = 1;
+  string from     = 2;
+  string to       = 3;
+  string data     = 4;
+  string value    = 5;
+  string chainId  = 6;
   string intentid = 7;
 }
 
@@ -61,4 +65,32 @@ message MsgUpdateIntent {
 }
 
 message MsgUpdateIntentResponse {}
+
+message MsgCreateSyncblock {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1;
+  string chainId = 2;
+  uint64 from    = 3;
+  uint64 to      = 4;
+}
+
+message MsgCreateSyncblockResponse {}
+
+message MsgUpdateSyncblock {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1;
+  string chainId = 2;
+  uint64 from    = 3;
+  uint64 to      = 4;
+}
+
+message MsgUpdateSyncblockResponse {}
+
+message MsgDeleteSyncblock {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1;
+  string chainId = 2;
+}
+
+message MsgDeleteSyncblockResponse {}
 

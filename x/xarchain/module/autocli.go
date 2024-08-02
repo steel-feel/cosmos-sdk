@@ -33,7 +33,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{},
 				},
 
-				// this line is used by ignite scaffolding # autocli/query
+				{
+			RpcMethod: "SyncblockAll",
+			Use: "list-syncblock",
+			Short: "List all syncblock",
+		},
+		{
+			RpcMethod: "Syncblock",
+			Use: "show-syncblock [id]",
+			Short: "Shows a syncblock",
+			PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "chainId"},},
+		},
+		// this line is used by ignite scaffolding # autocli/query
 			},
 		},
 		Tx: &autocliv1.ServiceCommandDescriptor{
@@ -57,7 +68,25 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Short:          "Send a update-intent tx",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "status"}, {ProtoField: "id"}},
 				},
-				// this line is used by ignite scaffolding # autocli/tx
+				{
+			RpcMethod: "CreateSyncblock",
+			Use: "create-syncblock [chainId] [from] [to]",
+			Short: "Create a new syncblock",
+			PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "chainId"}, {ProtoField: "from"}, {ProtoField: "to"},},
+		},
+		{
+			RpcMethod: "UpdateSyncblock",
+			Use: "update-syncblock [chainId] [from] [to]",
+			Short: "Update syncblock",
+			PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "chainId"}, {ProtoField: "from"}, {ProtoField: "to"},},
+		},
+		{
+			RpcMethod: "DeleteSyncblock",
+			Use: "delete-syncblock [chainId]",
+			Short: "Delete syncblock",
+			PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "chainId"},},
+		},
+		// this line is used by ignite scaffolding # autocli/tx
 			},
 		},
 	}

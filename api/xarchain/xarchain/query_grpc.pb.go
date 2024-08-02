@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_Params_FullMethodName     = "/xarchain.xarchain.Query/Params"
-	Query_GetIntent_FullMethodName  = "/xarchain.xarchain.Query/GetIntent"
-	Query_ListIntent_FullMethodName = "/xarchain.xarchain.Query/ListIntent"
+	Query_Params_FullMethodName       = "/xarchain.xarchain.Query/Params"
+	Query_GetIntent_FullMethodName    = "/xarchain.xarchain.Query/GetIntent"
+	Query_ListIntent_FullMethodName   = "/xarchain.xarchain.Query/ListIntent"
+	Query_Syncblock_FullMethodName    = "/xarchain.xarchain.Query/Syncblock"
+	Query_SyncblockAll_FullMethodName = "/xarchain.xarchain.Query/SyncblockAll"
 )
 
 // QueryClient is the client API for Query service.
@@ -34,6 +36,9 @@ type QueryClient interface {
 	GetIntent(ctx context.Context, in *QueryGetIntentRequest, opts ...grpc.CallOption) (*QueryGetIntentResponse, error)
 	// Queries a list of ListIntent items.
 	ListIntent(ctx context.Context, in *QueryListIntentRequest, opts ...grpc.CallOption) (*QueryListIntentResponse, error)
+	// Queries a list of Syncblock items.
+	Syncblock(ctx context.Context, in *QueryGetSyncblockRequest, opts ...grpc.CallOption) (*QueryGetSyncblockResponse, error)
+	SyncblockAll(ctx context.Context, in *QueryAllSyncblockRequest, opts ...grpc.CallOption) (*QueryAllSyncblockResponse, error)
 }
 
 type queryClient struct {
@@ -71,6 +76,24 @@ func (c *queryClient) ListIntent(ctx context.Context, in *QueryListIntentRequest
 	return out, nil
 }
 
+func (c *queryClient) Syncblock(ctx context.Context, in *QueryGetSyncblockRequest, opts ...grpc.CallOption) (*QueryGetSyncblockResponse, error) {
+	out := new(QueryGetSyncblockResponse)
+	err := c.cc.Invoke(ctx, Query_Syncblock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SyncblockAll(ctx context.Context, in *QueryAllSyncblockRequest, opts ...grpc.CallOption) (*QueryAllSyncblockResponse, error) {
+	out := new(QueryAllSyncblockResponse)
+	err := c.cc.Invoke(ctx, Query_SyncblockAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -81,6 +104,9 @@ type QueryServer interface {
 	GetIntent(context.Context, *QueryGetIntentRequest) (*QueryGetIntentResponse, error)
 	// Queries a list of ListIntent items.
 	ListIntent(context.Context, *QueryListIntentRequest) (*QueryListIntentResponse, error)
+	// Queries a list of Syncblock items.
+	Syncblock(context.Context, *QueryGetSyncblockRequest) (*QueryGetSyncblockResponse, error)
+	SyncblockAll(context.Context, *QueryAllSyncblockRequest) (*QueryAllSyncblockResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -96,6 +122,12 @@ func (UnimplementedQueryServer) GetIntent(context.Context, *QueryGetIntentReques
 }
 func (UnimplementedQueryServer) ListIntent(context.Context, *QueryListIntentRequest) (*QueryListIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListIntent not implemented")
+}
+func (UnimplementedQueryServer) Syncblock(context.Context, *QueryGetSyncblockRequest) (*QueryGetSyncblockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Syncblock not implemented")
+}
+func (UnimplementedQueryServer) SyncblockAll(context.Context, *QueryAllSyncblockRequest) (*QueryAllSyncblockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SyncblockAll not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -164,6 +196,42 @@ func _Query_ListIntent_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Syncblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetSyncblockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Syncblock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Syncblock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Syncblock(ctx, req.(*QueryGetSyncblockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SyncblockAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllSyncblockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SyncblockAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_SyncblockAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SyncblockAll(ctx, req.(*QueryAllSyncblockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -182,6 +250,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListIntent",
 			Handler:    _Query_ListIntent_Handler,
+		},
+		{
+			MethodName: "Syncblock",
+			Handler:    _Query_Syncblock_Handler,
+		},
+		{
+			MethodName: "SyncblockAll",
+			Handler:    _Query_SyncblockAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

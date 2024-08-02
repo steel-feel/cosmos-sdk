@@ -12,8 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum"
 	// "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type TxnDetails struct {
@@ -31,22 +31,21 @@ func NewProvider(supportedProviders map[string]string) map[string]Provider {
 	providers := make(map[string]Provider)
 	for chainID, rpcURL := range supportedProviders {
 		// Supporting only Arbitrum Sepolia, OP Sepolia and Ethereum Sepolia
-			switch chainID {
-			case "421614":
-				providers["421614"] = Provider{
-					rpcUrl:          rpcURL,
-					contractAddress: "0xF5620427CB929BAdd689f92D1AE52704dD019BDA",
-				}
-
-			case "11155111":
-			
-
-			case "11155420":
-				providers["11155420"] = Provider{
-					rpcUrl:          rpcURL,
-					contractAddress: "0x2884bD2cf67b933CBb5199093Cea052d7A79198A",
-				}
+		switch chainID {
+		case "421614":
+			providers["421614"] = Provider{
+				rpcUrl:          rpcURL,
+				contractAddress: "0xF5620427CB929BAdd689f92D1AE52704dD019BDA",
 			}
+
+		case "11155111":
+
+		case "11155420":
+			providers["11155420"] = Provider{
+				rpcUrl:          rpcURL,
+				contractAddress: "0x2884bD2cf67b933CBb5199093Cea052d7A79198A",
+			}
+		}
 
 	}
 	return providers
@@ -68,7 +67,10 @@ func (p *Provider) FetchEvents(prevFrom uint64, prevTo uint64) (EventsResp, erro
 	}
 
 	if prevTo == currentBlock {
-		return evtResponse, nil
+		return EventsResp{
+			From: prevFrom,
+			To:   prevTo,
+		}, nil
 	}
 
 	var From uint64
@@ -83,14 +85,14 @@ func (p *Provider) FetchEvents(prevFrom uint64, prevTo uint64) (EventsResp, erro
 		To = From + 999
 	}
 
-    // Define the event signature (you can get this from the ABI or Etherscan)
+	// Define the event signature (you can get this from the ABI or Etherscan)
 	eventSignature := []byte("IntentFulfiled(address,bytes32)")
-    eventSignatureHash := common.BytesToHash(crypto.Keccak256Hash(eventSignature).Bytes())
+	eventSignatureHash := common.BytesToHash(crypto.Keccak256Hash(eventSignature).Bytes())
 
 	contractAddress := common.HexToAddress(p.contractAddress)
 	query := ethereum.FilterQuery{
-        Topics:    [][]common.Hash{{eventSignatureHash}},
-		FromBlock:new(big.Int).SetUint64(From),
+		Topics:    [][]common.Hash{{eventSignatureHash}},
+		FromBlock: new(big.Int).SetUint64(From),
 		ToBlock:   new(big.Int).SetUint64(To),
 		Addresses: []common.Address{
 			contractAddress,
@@ -111,8 +113,8 @@ func (p *Provider) FetchEvents(prevFrom uint64, prevTo uint64) (EventsResp, erro
 			IntentID [32]byte
 		}{}
 
-        event.Filer = common.BytesToAddress(vLog.Topics[1].Bytes())
-        copy(event.IntentID[:], vLog.Topics[2].Bytes())
+		event.Filer = common.BytesToAddress(vLog.Topics[1].Bytes())
+		copy(event.IntentID[:], vLog.Topics[2].Bytes())
 
 		event.Filer = common.HexToAddress(vLog.Topics[1].Hex())
 
@@ -144,47 +146,6 @@ func NewProviderAggregator() *ProviderAggregator {
 	return &ProviderAggregator{
 		providerEvents: make(map[string]IntentData),
 	}
-}
-
-func FetchTxn(txHashStr string) (uint64, error) {
-	clientURL := "https://rpc.ankr.com/arbitrum_sepolia"
-
-	client, err := ethclient.Dial(clientURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	}
-
-	txHash := common.HexToHash(txHashStr)
-
-	ctx := context.Background()
-	receipt, err := client.TransactionReceipt(ctx, txHash)
-	if err != nil {
-		if err == ethereum.NotFound {
-			return 0, nil
-		} else {
-			log.Fatalf("Failed to get transaction receipt: %v", err)
-		}
-		return 0, err
-	}
-
-	// Check if the block number is set, indicating the transaction has been mined
-	if receipt.BlockNumber != nil {
-		fmt.Printf("Transaction has been mined in block %d\n", receipt.BlockNumber.Uint64())
-	} else {
-		fmt.Println("Transaction has not been mined yet")
-	}
-
-	currNumber, err := client.BlockNumber(ctx)
-	if err != nil {
-		if err == ethereum.NotFound {
-			return 1, nil
-		} else {
-			log.Fatalf("Failed to get transaction receipt: %v", err)
-		}
-		return 0, err
-	}
-
-	return currNumber, nil
 }
 
 func FetchTxDetails(txHashStr string) (TxnDetails, error) {
@@ -250,17 +211,20 @@ func (p *ProviderAggregator) SetIntentData(chainId string, iEvent EventsResp) bo
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
-	var IDs []string
-	
-	for _, intent := range iEvent.Intents {
-		IDs = append(IDs, intent.ID)
+	// set prices and candles for this provider if we haven't seen it before
+	_, ok := p.providerEvents[chainId]
+	if !ok {
+		var IDs []string
+		for _, intent := range iEvent.Intents {
+			IDs = append(IDs, intent.ID)
+		}
+		p.providerEvents[chainId] = IntentData{
+			From: iEvent.From,
+			To:   iEvent.To,
+			IDs:  IDs,
+		}
 	}
 
-	p.providerEvents[chainId] = IntentData{
-		From:    iEvent.From,
-		To:      iEvent.To,
-		IDs:     IDs,
-	}
-
-	return true
+	// return true if we set at least one price
+	return !ok
 }

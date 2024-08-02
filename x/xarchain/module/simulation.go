@@ -33,6 +33,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateIntent int = 100
 
+	opWeightMsgCreateSyncblock = "op_weight_msg_syncblock"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateSyncblock int = 100
+
+	opWeightMsgUpdateSyncblock = "op_weight_msg_syncblock"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateSyncblock int = 100
+
+	opWeightMsgDeleteSyncblock = "op_weight_msg_syncblock"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteSyncblock int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -44,7 +56,17 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	xarchainGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
-		// this line is used by starport scaffolding # simapp/module/genesisState
+		SyncblockList: []types.Syncblock{
+		{
+			Creator: sample.AccAddress(),
+ChainId: "0",
+},
+		{
+			Creator: sample.AccAddress(),
+ChainId: "1",
+},
+	},
+	// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&xarchainGenesis)
 }
@@ -80,6 +102,39 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		xarchainsimulation.SimulateMsgUpdateIntent(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
+	var weightMsgCreateSyncblock int
+	simState.AppParams.GetOrGenerate(opWeightMsgCreateSyncblock, &weightMsgCreateSyncblock, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateSyncblock = defaultWeightMsgCreateSyncblock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateSyncblock,
+		xarchainsimulation.SimulateMsgCreateSyncblock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateSyncblock int
+	simState.AppParams.GetOrGenerate(opWeightMsgUpdateSyncblock, &weightMsgUpdateSyncblock, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateSyncblock = defaultWeightMsgUpdateSyncblock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateSyncblock,
+		xarchainsimulation.SimulateMsgUpdateSyncblock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteSyncblock int
+	simState.AppParams.GetOrGenerate(opWeightMsgDeleteSyncblock, &weightMsgDeleteSyncblock, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteSyncblock = defaultWeightMsgDeleteSyncblock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteSyncblock,
+		xarchainsimulation.SimulateMsgDeleteSyncblock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
@@ -104,6 +159,30 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 				return nil
 			},
 		),
-		// this line is used by starport scaffolding # simapp/module/OpMsg
+		simulation.NewWeightedProposalMsg(
+	opWeightMsgCreateSyncblock,
+	defaultWeightMsgCreateSyncblock,
+	func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+		xarchainsimulation.SimulateMsgCreateSyncblock(am.accountKeeper, am.bankKeeper, am.keeper)
+		return nil
+	},
+),
+simulation.NewWeightedProposalMsg(
+	opWeightMsgUpdateSyncblock,
+	defaultWeightMsgUpdateSyncblock,
+	func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+		xarchainsimulation.SimulateMsgUpdateSyncblock(am.accountKeeper, am.bankKeeper, am.keeper)
+		return nil
+	},
+),
+simulation.NewWeightedProposalMsg(
+	opWeightMsgDeleteSyncblock,
+	defaultWeightMsgDeleteSyncblock,
+	func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+		xarchainsimulation.SimulateMsgDeleteSyncblock(am.accountKeeper, am.bankKeeper, am.keeper)
+		return nil
+	},
+),
+// this line is used by starport scaffolding # simapp/module/OpMsg
 	}
 }

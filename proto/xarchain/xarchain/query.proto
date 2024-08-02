@@ -8,6 +8,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "xarchain/xarchain/params.proto";
 import "xarchain/xarchain/intent.proto";
+import "xarchain/xarchain/syncblock.proto";
 
 option go_package = "xarchain/x/xarchain/types";
 
@@ -29,6 +30,16 @@ service Query {
   // Queries a list of ListIntent items.
   rpc ListIntent (QueryListIntentRequest) returns (QueryListIntentResponse) {
     option (google.api.http).get = "/xarchain/xarchain/list_intent";
+  
+  }
+  
+  // Queries a list of Syncblock items.
+  rpc Syncblock    (QueryGetSyncblockRequest) returns (QueryGetSyncblockResponse) {
+    option (google.api.http).get = "/xarchain/xarchain/syncblock/{chainId}";
+  
+  }
+  rpc SyncblockAll (QueryAllSyncblockRequest) returns (QueryAllSyncblockResponse) {
+    option (google.api.http).get = "/xarchain/xarchain/syncblock";
   
   }
 }
@@ -55,7 +66,24 @@ message QueryListIntentRequest {
 }
 
 message QueryListIntentResponse {
-  repeated Intent intent = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated Intent                                 intent     = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetSyncblockRequest {
+  string chainId = 1;
+}
+
+message QueryGetSyncblockResponse {
+  Syncblock syncblock = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllSyncblockRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllSyncblockResponse {
+  repeated Syncblock                              syncblock  = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

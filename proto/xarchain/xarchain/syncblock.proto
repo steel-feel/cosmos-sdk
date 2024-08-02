@@ -1,0 +1,12 @@
+syntax = "proto3";
+package xarchain.xarchain;
+
+option go_package = "xarchain/x/xarchain/types";
+
+message Syncblock {
+  string chainId = 1; 
+  uint64 from = 2; 
+  uint64 to = 3; 
+  string creator = 4;
+}
+

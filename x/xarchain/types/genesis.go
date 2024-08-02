@@ -1,6 +1,8 @@
 package types
 
-// this line is used by starport scaffolding # genesis/types/import
+import (
+"fmt"
+)
 
 // DefaultIndex is the default global index
 const DefaultIndex uint64 = 1
@@ -8,7 +10,8 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default
+		SyncblockList: []Syncblock{},
+// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
 }
@@ -16,7 +19,17 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate
+	// Check for duplicated index in syncblock
+syncblockIndexMap := make(map[string]struct{})
+
+for _, elem := range gs.SyncblockList {
+	index := string(SyncblockKey(elem.ChainId))
+	if _, ok := syncblockIndexMap[index]; ok {
+		return fmt.Errorf("duplicated index for syncblock")
+	}
+	syncblockIndexMap[index] = struct{}{}
+}
+// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()
 }

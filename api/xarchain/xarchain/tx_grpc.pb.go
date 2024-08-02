@@ -19,9 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_UpdateParams_FullMethodName = "/xarchain.xarchain.Msg/UpdateParams"
-	Msg_CreateIntent_FullMethodName = "/xarchain.xarchain.Msg/CreateIntent"
-	Msg_UpdateIntent_FullMethodName = "/xarchain.xarchain.Msg/UpdateIntent"
+	Msg_UpdateParams_FullMethodName    = "/xarchain.xarchain.Msg/UpdateParams"
+	Msg_CreateIntent_FullMethodName    = "/xarchain.xarchain.Msg/CreateIntent"
+	Msg_UpdateIntent_FullMethodName    = "/xarchain.xarchain.Msg/UpdateIntent"
+	Msg_CreateSyncblock_FullMethodName = "/xarchain.xarchain.Msg/CreateSyncblock"
+	Msg_UpdateSyncblock_FullMethodName = "/xarchain.xarchain.Msg/UpdateSyncblock"
+	Msg_DeleteSyncblock_FullMethodName = "/xarchain.xarchain.Msg/DeleteSyncblock"
 )
 
 // MsgClient is the client API for Msg service.
@@ -33,6 +36,9 @@ type MsgClient interface {
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	CreateIntent(ctx context.Context, in *MsgCreateIntent, opts ...grpc.CallOption) (*MsgCreateIntentResponse, error)
 	UpdateIntent(ctx context.Context, in *MsgUpdateIntent, opts ...grpc.CallOption) (*MsgUpdateIntentResponse, error)
+	CreateSyncblock(ctx context.Context, in *MsgCreateSyncblock, opts ...grpc.CallOption) (*MsgCreateSyncblockResponse, error)
+	UpdateSyncblock(ctx context.Context, in *MsgUpdateSyncblock, opts ...grpc.CallOption) (*MsgUpdateSyncblockResponse, error)
+	DeleteSyncblock(ctx context.Context, in *MsgDeleteSyncblock, opts ...grpc.CallOption) (*MsgDeleteSyncblockResponse, error)
 }
 
 type msgClient struct {
@@ -70,6 +76,33 @@ func (c *msgClient) UpdateIntent(ctx context.Context, in *MsgUpdateIntent, opts 
 	return out, nil
 }
 
+func (c *msgClient) CreateSyncblock(ctx context.Context, in *MsgCreateSyncblock, opts ...grpc.CallOption) (*MsgCreateSyncblockResponse, error) {
+	out := new(MsgCreateSyncblockResponse)
+	err := c.cc.Invoke(ctx, Msg_CreateSyncblock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateSyncblock(ctx context.Context, in *MsgUpdateSyncblock, opts ...grpc.CallOption) (*MsgUpdateSyncblockResponse, error) {
+	out := new(MsgUpdateSyncblockResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateSyncblock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) DeleteSyncblock(ctx context.Context, in *MsgDeleteSyncblock, opts ...grpc.CallOption) (*MsgDeleteSyncblockResponse, error) {
+	out := new(MsgDeleteSyncblockResponse)
+	err := c.cc.Invoke(ctx, Msg_DeleteSyncblock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -79,6 +112,9 @@ type MsgServer interface {
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	CreateIntent(context.Context, *MsgCreateIntent) (*MsgCreateIntentResponse, error)
 	UpdateIntent(context.Context, *MsgUpdateIntent) (*MsgUpdateIntentResponse, error)
+	CreateSyncblock(context.Context, *MsgCreateSyncblock) (*MsgCreateSyncblockResponse, error)
+	UpdateSyncblock(context.Context, *MsgUpdateSyncblock) (*MsgUpdateSyncblockResponse, error)
+	DeleteSyncblock(context.Context, *MsgDeleteSyncblock) (*MsgDeleteSyncblockResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -94,6 +130,15 @@ func (UnimplementedMsgServer) CreateIntent(context.Context, *MsgCreateIntent) (*
 }
 func (UnimplementedMsgServer) UpdateIntent(context.Context, *MsgUpdateIntent) (*MsgUpdateIntentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateIntent not implemented")
+}
+func (UnimplementedMsgServer) CreateSyncblock(context.Context, *MsgCreateSyncblock) (*MsgCreateSyncblockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSyncblock not implemented")
+}
+func (UnimplementedMsgServer) UpdateSyncblock(context.Context, *MsgUpdateSyncblock) (*MsgUpdateSyncblockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSyncblock not implemented")
+}
+func (UnimplementedMsgServer) DeleteSyncblock(context.Context, *MsgDeleteSyncblock) (*MsgDeleteSyncblockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSyncblock not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -162,6 +207,60 @@ func _Msg_UpdateIntent_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_CreateSyncblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateSyncblock)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateSyncblock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_CreateSyncblock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateSyncblock(ctx, req.(*MsgCreateSyncblock))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateSyncblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateSyncblock)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateSyncblock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateSyncblock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateSyncblock(ctx, req.(*MsgUpdateSyncblock))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_DeleteSyncblock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteSyncblock)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DeleteSyncblock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_DeleteSyncblock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DeleteSyncblock(ctx, req.(*MsgDeleteSyncblock))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -180,6 +279,18 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateIntent",
 			Handler:    _Msg_UpdateIntent_Handler,
+		},
+		{
+			MethodName: "CreateSyncblock",
+			Handler:    _Msg_CreateSyncblock_Handler,
+		},
+		{
+			MethodName: "UpdateSyncblock",
+			Handler:    _Msg_UpdateSyncblock_Handler,
+		},
+		{
+			MethodName: "DeleteSyncblock",
+			Handler:    _Msg_DeleteSyncblock_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

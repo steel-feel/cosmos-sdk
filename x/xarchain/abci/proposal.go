@@ -12,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"xarchain/x/xarchain/keeper"
+	"xarchain/x/xarchain/types"
 )
 
 // StakeWeightedPrices defines the structure a proposer should use to calculate
@@ -126,7 +127,16 @@ func (h *ProposalHandler) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeB
 		}
 
 		//TODO: Upgrade using go routine
-		for _, intentData := range injectedVoteExtTx.IntentData {
+		for chainId, intentData := range injectedVoteExtTx.IntentData {
+			// Set the intent data in the keeper
+			if intentData.From != 0 && intentData.To != 0 {
+			h.keeper.SetSyncblock(ctx, types.Syncblock{
+				From:    intentData.From,
+				To:      intentData.To,
+				ChainId: chainId,
+			})
+			}
+
 			for _, ID := range intentData.IDs {
 				intent, found := h.keeper.GetIntentById(ctx, ID)
 

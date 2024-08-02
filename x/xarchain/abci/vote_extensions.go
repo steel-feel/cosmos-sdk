@@ -75,13 +75,44 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					}
 				}
 			} 
+
+			stateBlock := make(map[string][2]uint64) // map of chainId to [from, to] block numbers
+			for chainId := range h.providers {
+				
+				sData,found := h.Keeper.GetSyncblock(ctx, chainId)
+				if !found {
+					stateBlock[chainId] = [2]uint64{0,0}
+				}
+				stateBlock[chainId] = [2]uint64{sData.From, sData.To}
+			}
+
 			beforeFor := time.Now()
 			for chainId, provider := range h.providers {
 				chainId := chainId
 				provider := provider
 
-				pFromBlock := injectedVoteExtTx.IntentData[chainId].From
-				pToBlock := injectedVoteExtTx.IntentData[chainId].To
+				h.logger.Warn("State Blocks", "Chain", chainId,
+			 "From", stateBlock[chainId][0] ,
+			 "To", stateBlock[chainId][1],
+			 )
+
+				var pFromBlock,pToBlock uint64
+				if(stateBlock[chainId][0] > injectedVoteExtTx.IntentData[chainId].From){
+					pFromBlock = stateBlock[chainId][0]
+				}else {
+					pFromBlock = injectedVoteExtTx.IntentData[chainId].From
+				}
+
+				if(stateBlock[chainId][1] > injectedVoteExtTx.IntentData[chainId].To){
+					pToBlock = stateBlock[chainId][1]
+				}else {
+					pToBlock = injectedVoteExtTx.IntentData[chainId].To
+				}
+
+				h.logger.Warn("FinBlocks Blocks", "Chain", chainId,
+				"From", pFromBlock ,
+				"To", pToBlock,
+				)
 				// priceProvider := h.providers[providerName]
 				// Launch a goroutine to fetch events from provider.
 				// Recall, vote extensions are not required to be deterministic.
@@ -124,7 +155,7 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					for chainID, iData := range intents {
 						success := providerAgg.SetIntentData(chainID, iData)
 						if !success {
-							return fmt.Errorf("failed to find any exchange rates in provider responses")
+							return fmt.Errorf("failed to set intent data for chain %s", chainID)
 						}
 					}
 	
