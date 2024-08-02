@@ -47,9 +47,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			
 				{
 					RpcMethod:      "CreateIntent",
-					Use:            "create-intent [from] [to] [data] [value] [chain-id]",
+					Use:            "create-intent [from] [to] [data] [value] [chain-id] [intentid]",
 					Short:          "Send a create-intent tx",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "from"}, {ProtoField: "to"}, {ProtoField: "data"}, {ProtoField: "value"}, {ProtoField: "chainId"}},
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "from"}, {ProtoField: "to"}, {ProtoField: "data"}, {ProtoField: "value"}, {ProtoField: "chainId"}, {ProtoField: "intentid"}},
 				},
 				{
 					RpcMethod:      "UpdateIntent",
