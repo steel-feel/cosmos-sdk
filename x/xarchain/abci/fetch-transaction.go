@@ -53,7 +53,7 @@ func NewProvider(supportedProviders map[string]string) map[string]Provider {
 
 }
 
-func (p *Provider) FetchEvents(prevFrom int64, prevTo int64) (EventsResp, error) {
+func (p *Provider) FetchEvents(prevFrom uint64, prevTo uint64) (EventsResp, error) {
 	var evtResponse EventsResp
 	// Get the current block number
 	client, err := ethclient.Dial(p.rpcUrl)
@@ -67,23 +67,19 @@ func (p *Provider) FetchEvents(prevFrom int64, prevTo int64) (EventsResp, error)
 
 	}
 
-	
-	iCurrentBlock := int64(currentBlock)
-	log.Default().Printf("block number: %v", iCurrentBlock)
-	
-	if prevTo == iCurrentBlock {
+	if prevTo == currentBlock {
 		return evtResponse, nil
 	}
 
-	var From int64
+	var From uint64
 	if prevFrom == 0 {
-		From = iCurrentBlock
+		From = currentBlock
 	} else {
 		From = prevTo + 1
 	}
 
-	To := iCurrentBlock
-	if From+999 < iCurrentBlock {
+	To := currentBlock
+	if From+999 < currentBlock {
 		To = From + 999
 	}
 
@@ -91,12 +87,11 @@ func (p *Provider) FetchEvents(prevFrom int64, prevTo int64) (EventsResp, error)
 	eventSignature := []byte("IntentFulfiled(address,bytes32)")
     eventSignatureHash := common.BytesToHash(crypto.Keccak256Hash(eventSignature).Bytes())
 
-
 	contractAddress := common.HexToAddress(p.contractAddress)
 	query := ethereum.FilterQuery{
         Topics:    [][]common.Hash{{eventSignatureHash}},
-		FromBlock: big.NewInt(From),
-		ToBlock:   big.NewInt(To),
+		FromBlock:new(big.Int).SetUint64(From),
+		ToBlock:   new(big.Int).SetUint64(To),
 		Addresses: []common.Address{
 			contractAddress,
 		},
@@ -247,8 +242,8 @@ type EmittedIntents struct {
 
 type EventsResp struct {
 	Intents []EmittedIntents
-	From    int64
-	To      int64
+	From    uint64
+	To      uint64
 }
 
 func (p *ProviderAggregator) SetIntentData(chainId string, iEvent EventsResp) bool {

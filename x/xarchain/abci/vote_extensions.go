@@ -38,8 +38,8 @@ type CAVoteExtension struct {
 }
 
 type IntentData struct {
-	From    int64
-	To      int64
+	From    uint64
+	To      uint64
 	IDs     []string
 }
 
